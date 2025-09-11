@@ -1,0 +1,244 @@
+/* 파이코인 마켓 커스텀 스타일 */
+
+/* 스크롤바 커스터마이징 */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FF6600;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e55a00;
+}
+
+/* 애니메이션 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.pulse-animation {
+  animation: pulse 2s infinite;
+}
+
+/* 카테고리 카드 */
+.category-card {
+  @apply bg-white rounded-xl p-4 text-center shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer border border-gray-100;
+}
+
+.category-card:hover {
+  transform: translateY(-2px);
+  border-color: #FF6600;
+}
+
+.category-card.active {
+  @apply bg-gradient-to-br from-orange-500 to-orange-600 text-white;
+}
+
+/* 상품 카드 */
+.product-card {
+  @apply bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}
+
+.product-image {
+  @apply w-full h-48 object-cover bg-gray-200;
+}
+
+.product-placeholder {
+  @apply w-full h-48 bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center;
+}
+
+/* 가격 표시 */
+.price-display {
+  @apply flex items-center space-x-2;
+}
+
+.krw-price {
+  @apply text-lg font-bold text-gray-800;
+}
+
+.pi-price {
+  @apply text-sm font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded-full;
+}
+
+/* 상태 배지 */
+.status-badge {
+  @apply inline-block px-2 py-1 text-xs font-medium rounded-full;
+}
+
+.status-new {
+  @apply bg-green-100 text-green-800;
+}
+
+.status-like-new {
+  @apply bg-blue-100 text-blue-800;
+}
+
+.status-good {
+  @apply bg-yellow-100 text-yellow-800;
+}
+
+.status-fair {
+  @apply bg-orange-100 text-orange-800;
+}
+
+.status-poor {
+  @apply bg-red-100 text-red-800;
+}
+
+/* 모달 애니메이션 */
+.modal-enter {
+  animation: modalEnter 0.3s ease-out;
+}
+
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 채팅 스타일 */
+.chat-container {
+  @apply max-h-96 overflow-y-auto bg-gray-50 rounded-lg p-4;
+}
+
+.chat-message {
+  @apply mb-3 flex;
+}
+
+.chat-message.sent {
+  @apply justify-end;
+}
+
+.chat-message.received {
+  @apply justify-start;
+}
+
+.chat-bubble {
+  @apply max-w-xs px-4 py-2 rounded-2xl;
+}
+
+.chat-bubble.sent {
+  @apply bg-orange-500 text-white rounded-br-sm;
+}
+
+.chat-bubble.received {
+  @apply bg-white text-gray-800 rounded-bl-sm border border-gray-200;
+}
+
+.chat-time {
+  @apply text-xs text-gray-500 mt-1;
+}
+
+/* 업로드 영역 */
+.upload-area {
+  @apply border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-orange-500 transition-colors cursor-pointer;
+}
+
+.upload-area.dragover {
+  @apply border-orange-500 bg-orange-50;
+}
+
+.image-preview {
+  @apply relative inline-block mr-2 mb-2;
+}
+
+.image-preview img {
+  @apply w-20 h-20 object-cover rounded-lg border border-gray-200;
+}
+
+.image-preview .remove-btn {
+  @apply absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs cursor-pointer hover:bg-red-600;
+}
+
+/* 로딩 스피너 */
+.spinner {
+  @apply inline-block w-4 h-4 border-2 border-gray-300 border-t-orange-500 rounded-full animate-spin;
+}
+
+/* 반응형 조정 */
+@media (max-width: 768px) {
+  .product-card .product-image {
+    @apply h-40;
+  }
+  
+  .category-card {
+    @apply p-3;
+  }
+  
+  .modal-content {
+    @apply mx-4;
+  }
+}
+
+/* 토스트 알림 */
+.toast {
+  @apply fixed top-20 right-4 bg-white shadow-lg rounded-lg p-4 border-l-4 z-50 transition-all duration-300 transform translate-x-full;
+}
+
+.toast.show {
+  @apply translate-x-0;
+}
+
+.toast.success {
+  @apply border-green-500;
+}
+
+.toast.error {
+  @apply border-red-500;
+}
+
+.toast.info {
+  @apply border-blue-500;
+}
+
+/* 파이코인 아이콘 */
+.pi-icon {
+  @apply inline-flex items-center justify-center w-6 h-6 bg-gradient-to-br from-orange-500 to-yellow-500 text-white text-sm font-bold rounded-full;
+}
+
+/* 하트 애니메이션 */
+.heart-bounce {
+  animation: heartBounce 0.6s ease-in-out;
+}
+
+@keyframes heartBounce {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}

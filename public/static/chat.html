@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>채팅 - 파이코인 마켓 🥕</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pi-orange': '#FF6600',
+                        'pi-yellow': '#FFD700',
+                        'carrot-orange': '#FF7E36'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="/static/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 h-screen flex flex-col">
+    <!-- 헤더 -->
+    <header class="bg-white shadow-sm border-b">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- 뒤로가기 + 상품 정보 -->
+                <div class="flex items-center space-x-4">
+                    <button onclick="history.back()" class="text-gray-600 hover:text-pi-orange">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <div id="productInfo" class="flex items-center space-x-3">
+                        <!-- 상품 정보가 동적으로 로드됩니다 -->
+                    </div>
+                </div>
+
+                <!-- 채팅 안내 -->
+                <div class="text-right">
+                    <div class="text-xs text-yellow-600 font-medium">
+                        <i class="fas fa-clock mr-1"></i>
+                        3일 후 자동 삭제
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 채팅 컨테이너 -->
+    <div class="flex-1 flex flex-col max-w-4xl mx-auto w-full">
+        <!-- 채팅 메시지 영역 -->
+        <div class="flex-1 overflow-y-auto p-4" id="chatContainer">
+            <!-- 안내 메시지 -->
+            <div class="bg-yellow-100 border border-yellow-200 rounded-lg p-4 mb-4">
+                <div class="flex items-start space-x-3">
+                    <i class="fas fa-exclamation-triangle text-yellow-500 mt-1"></i>
+                    <div class="text-sm text-yellow-700">
+                        <p class="font-medium mb-1">채팅 주의사항</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>채팅 기록은 3일 후 자동으로 삭제됩니다.</li>
+                            <li>중요한 거래 정보는 따로 메모해 주세요.</li>
+                            <li>안전한 거래를 위해 직거래를 권장합니다.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 채팅 메시지 목록 -->
+            <div id="messageList" class="space-y-3">
+                <!-- 메시지가 동적으로 로드됩니다 -->
+            </div>
+
+            <!-- 로딩 인디케이터 -->
+            <div id="loadingMessages" class="text-center py-4 hidden">
+                <div class="spinner mx-auto mb-2"></div>
+                <p class="text-gray-500 text-sm">메시지를 불러오는 중...</p>
+            </div>
+        </div>
+
+        <!-- 메시지 입력 영역 -->
+        <div class="bg-white border-t p-4">
+            <div class="flex items-end space-x-3">
+                <!-- 메시지 입력 -->
+                <div class="flex-1">
+                    <textarea id="messageInput" 
+                              placeholder="메시지를 입력하세요..." 
+                              rows="1"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pi-orange resize-none"
+                              style="min-height: 44px; max-height: 120px;"></textarea>
+                </div>
+                
+                <!-- 전송 버튼 -->
+                <button id="sendButton" 
+                        class="px-4 py-3 bg-pi-orange text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+            
+            <!-- 입력 가이드 -->
+            <div class="mt-2 text-xs text-gray-500 flex justify-between">
+                <span>Enter로 전송, Shift+Enter로 줄바꿈</span>
+                <span id="messageCount">0/500자</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 연결 상태 표시 -->
+    <div id="connectionStatus" class="fixed bottom-4 left-4 hidden">
+        <div class="bg-red-500 text-white px-3 py-2 rounded-lg text-sm">
+            <i class="fas fa-wifi mr-2"></i>
+            연결 상태를 확인중...
+        </div>
+    </div>
+
+    <!-- 채팅방 없음 알림 -->
+    <div id="noChatRoom" class="fixed inset-0 bg-gray-50 flex items-center justify-center hidden">
+        <div class="text-center">
+            <div class="text-gray-400 mb-4">
+                <i class="fas fa-comments text-6xl"></i>
+            </div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">채팅방이 없습니다</h2>
+            <p class="text-gray-600 mb-6">상품 페이지에서 판매자와 채팅을 시작하세요.</p>
+            <button onclick="history.back()" class="px-6 py-3 bg-pi-orange text-white rounded-lg hover:bg-orange-600 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>
+                돌아가기
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="/static/chat.js"></script>
+</body>
+</html>

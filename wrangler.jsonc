@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "picoin-market",
+  "main": "src/index.tsx",
+  "compatibility_date": "2024-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": "./dist",
+
+  // D1 Database (로컬 개발 시 --local 플래그로 자동 생성)
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "picoin-market-production",
+      "database_id": "your-database-id-here"  // 실제 배포 시 교체 필요
+    }
+  ]
+}

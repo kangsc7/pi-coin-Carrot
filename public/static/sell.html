@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 등록 - 파이코인 마켓 🥕</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pi-orange': '#FF6600',
+                        'pi-yellow': '#FFD700',
+                        'carrot-orange': '#FF7E36'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="/static/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- 헤더 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- 뒤로가기 + 로고 -->
+                <div class="flex items-center space-x-4">
+                    <button onclick="history.back()" class="text-gray-600 hover:text-pi-orange">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-br from-pi-orange to-carrot-orange rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold">π</span>
+                        </div>
+                        <span class="font-bold text-gray-800">상품 등록</span>
+                    </div>
+                </div>
+
+                <!-- 저장 버튼 -->
+                <button id="saveBtn" class="px-6 py-2 bg-pi-orange text-white rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50" disabled>
+                    <i class="fas fa-save mr-2"></i>등록하기
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="max-w-2xl mx-auto px-4 py-8">
+        <form id="sellForm" class="space-y-8">
+            <!-- 이미지 업로드 섹션 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-gray-800 mb-4">
+                    <i class="fas fa-camera text-pi-orange mr-2"></i>
+                    상품 사진 (최대 3장)
+                </h2>
+                
+                <div id="imageUploadArea" class="upload-area">
+                    <div class="text-center">
+                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-4"></i>
+                        <p class="text-gray-600 font-medium mb-2">사진을 여기에 드래그하거나 클릭하여 업로드</p>
+                        <p class="text-sm text-gray-500">JPG, PNG 파일 (자동 80% 압축)</p>
+                        <input type="file" id="imageInput" multiple accept="image/*" class="hidden">
+                    </div>
+                </div>
+
+                <!-- 이미지 미리보기 -->
+                <div id="imagePreview" class="mt-4 flex flex-wrap"></div>
+                
+                <!-- 업로드 진행률 -->
+                <div id="uploadProgress" class="mt-4 hidden">
+                    <div class="bg-gray-200 rounded-full h-2">
+                        <div id="progressBar" class="bg-pi-orange h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-2">이미지 압축 중...</p>
+                </div>
+            </div>
+
+            <!-- 상품 정보 섹션 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-gray-800 mb-6">
+                    <i class="fas fa-info-circle text-pi-orange mr-2"></i>
+                    상품 정보
+                </h2>
+
+                <!-- 제목 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">상품명 *</label>
+                    <input type="text" name="title" required maxlength="100" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pi-orange"
+                           placeholder="상품명을 입력하세요">
+                    <p class="text-xs text-gray-500 mt-1">최대 100자</p>
+                </div>
+
+                <!-- 카테고리 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">카테고리 *</label>
+                    <select name="categoryId" required 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pi-orange">
+                        <option value="">카테고리를 선택하세요</option>
+                        <!-- 카테고리 옵션이 동적으로 로드됩니다 -->
+                    </select>
+                </div>
+
+                <!-- 상태 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">상품 상태 *</label>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                        <label class="relative">
+                            <input type="radio" name="condition" value="new" required class="hidden">
+                            <div class="condition-option border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-pi-orange transition-colors">
+                                <div class="text-sm font-medium text-gray-700">새상품</div>
+                            </div>
+                        </label>
+                        <label class="relative">
+                            <input type="radio" name="condition" value="like_new" required class="hidden">
+                            <div class="condition-option border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-pi-orange transition-colors">
+                                <div class="text-sm font-medium text-gray-700">거의새것</div>
+                            </div>
+                        </label>
+                        <label class="relative">
+                            <input type="radio" name="condition" value="good" required class="hidden">
+                            <div class="condition-option border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-pi-orange transition-colors">
+                                <div class="text-sm font-medium text-gray-700">좋음</div>
+                            </div>
+                        </label>
+                        <label class="relative">
+                            <input type="radio" name="condition" value="fair" required class="hidden">
+                            <div class="condition-option border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-pi-orange transition-colors">
+                                <div class="text-sm font-medium text-gray-700">보통</div>
+                            </div>
+                        </label>
+                        <label class="relative">
+                            <input type="radio" name="condition" value="poor" required class="hidden">
+                            <div class="condition-option border-2 border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:border-pi-orange transition-colors">
+                                <div class="text-sm font-medium text-gray-700">나쁨</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 가격 -->
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">원화 가격 *</label>
+                        <div class="relative">
+                            <input type="number" name="price" required min="0" step="1000" 
+                                   class="w-full px-4 py-3 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:border-pi-orange"
+                                   placeholder="0">
+                            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">원</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">파이코인 가격 *</label>
+                        <div class="relative">
+                            <input type="number" name="piPrice" required min="0" step="0.1" 
+                                   class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:outline-none focus:border-pi-orange"
+                                   placeholder="0.0">
+                            <span class="absolute right-3 top-1/2 transform -translate-y-1/2 text-pi-orange font-bold">π</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 위치 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">거래 희망 지역</label>
+                    <input type="text" name="location" maxlength="100" 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pi-orange"
+                           placeholder="예: 서울 강남구, 부산 해운대구">
+                </div>
+
+                <!-- 설명 -->
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">상품 설명 *</label>
+                    <textarea name="description" required rows="6" maxlength="2000" 
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-pi-orange resize-none"
+                              placeholder="상품에 대해 자세히 설명해주세요. 상태, 구매 시기, 사용 기간 등을 포함하면 좋습니다."></textarea>
+                    <p class="text-xs text-gray-500 mt-1">최대 2000자 <span id="descLength">0</span>/2000</p>
+                </div>
+            </div>
+
+            <!-- 게시물 제한 안내 -->
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-lg">
+                <div class="flex">
+                    <i class="fas fa-exclamation-triangle text-yellow-400 mr-3 mt-1"></i>
+                    <div>
+                        <h3 class="text-sm font-medium text-yellow-800">게시물 제한 안내</h3>
+                        <div class="mt-2 text-sm text-yellow-700">
+                            <p>• 1일 최대 3개의 상품을 등록할 수 있습니다.</p>
+                            <p>• 게시물을 삭제하면 해당 날짜에 다시 등록할 수 있습니다.</p>
+                            <p>• 오늘 등록된 상품: <span id="todayPostCount" class="font-bold">0</span>/3개</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 제출 버튼 (모바일용) -->
+            <div class="block md:hidden">
+                <button type="submit" class="w-full py-3 bg-pi-orange text-white font-medium rounded-lg hover:bg-orange-600 transition-colors disabled:opacity-50" disabled>
+                    <i class="fas fa-save mr-2"></i>상품 등록하기
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <!-- 로딩 오버레이 -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 text-center">
+            <div class="spinner mx-auto mb-4"></div>
+            <p class="text-gray-700 font-medium">상품 등록 중...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="/static/sell.js"></script>
+</body>
+</html>

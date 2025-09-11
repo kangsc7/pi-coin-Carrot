@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상품 상세 - 파이코인 마켓 🥕</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pi-orange': '#FF6600',
+                        'pi-yellow': '#FFD700',
+                        'carrot-orange': '#FF7E36'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="/static/styles.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- 헤더 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <!-- 뒤로가기 + 제목 -->
+                <div class="flex items-center space-x-4">
+                    <button onclick="history.back()" class="text-gray-600 hover:text-pi-orange">
+                        <i class="fas fa-arrow-left text-xl"></i>
+                    </button>
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-br from-pi-orange to-carrot-orange rounded-lg flex items-center justify-center">
+                            <span class="text-white font-bold">π</span>
+                        </div>
+                        <span class="font-bold text-gray-800">상품 상세</span>
+                    </div>
+                </div>
+
+                <!-- 액션 버튼들 -->
+                <div class="flex items-center space-x-2">
+                    <button id="likeBtn" class="p-2 text-gray-600 hover:text-red-500 transition-colors">
+                        <i class="far fa-heart text-xl"></i>
+                    </button>
+                    <button id="shareBtn" class="p-2 text-gray-600 hover:text-pi-orange transition-colors">
+                        <i class="fas fa-share-alt text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="max-w-4xl mx-auto px-4 py-6">
+        <!-- 로딩 상태 -->
+        <div id="loadingState" class="text-center py-12">
+            <div class="spinner mx-auto mb-4"></div>
+            <p class="text-gray-600">상품 정보를 불러오는 중...</p>
+        </div>
+
+        <!-- 상품 정보 -->
+        <div id="productDetail" class="hidden">
+            <!-- 이미지 갤러리 -->
+            <div class="bg-white rounded-2xl overflow-hidden shadow-sm mb-6">
+                <div id="imageGallery" class="relative">
+                    <!-- 메인 이미지 -->
+                    <div class="aspect-square bg-gray-200 flex items-center justify-center">
+                        <i class="fas fa-image text-gray-400 text-6xl"></i>
+                    </div>
+                    
+                    <!-- 이미지 네비게이션 (여러 이미지가 있을 경우) -->
+                    <div id="imageNav" class="hidden absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                        <div class="flex space-x-2">
+                            <!-- 동적으로 생성됩니다 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 썸네일 (여러 이미지가 있을 경우) -->
+                <div id="thumbnails" class="hidden p-4 border-t">
+                    <div class="flex space-x-2 overflow-x-auto">
+                        <!-- 동적으로 생성됩니다 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 상품 기본 정보 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+                <!-- 카테고리 및 상태 -->
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center space-x-3">
+                        <span id="categoryBadge" class="px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"></span>
+                        <span id="conditionBadge" class="px-3 py-1 text-sm rounded-full"></span>
+                    </div>
+                    <div class="flex items-center space-x-2 text-sm text-gray-500">
+                        <span id="viewCount">조회 0</span>
+                        <span>•</span>
+                        <span id="timeAgo">방금 전</span>
+                    </div>
+                </div>
+
+                <!-- 제목 -->
+                <h1 id="productTitle" class="text-2xl font-bold text-gray-800 mb-4">상품명</h1>
+
+                <!-- 가격 -->
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-4">
+                        <span id="krwPrice" class="text-3xl font-bold text-gray-800">0원</span>
+                        <div id="piPrice" class="flex items-center space-x-2 px-4 py-2 bg-pi-orange bg-opacity-10 rounded-full">
+                            <span class="pi-icon">π</span>
+                            <span class="font-bold text-pi-orange">0</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span id="likeCount" class="flex items-center text-gray-500">
+                            <i class="fas fa-heart text-red-500 mr-1"></i>
+                            0
+                        </span>
+                    </div>
+                </div>
+
+                <!-- 위치 -->
+                <div id="locationInfo" class="flex items-center text-gray-600 mb-4">
+                    <i class="fas fa-map-marker-alt mr-2"></i>
+                    <span>위치 정보 없음</span>
+                </div>
+
+                <!-- 설명 -->
+                <div class="border-t pt-4">
+                    <h3 class="font-medium text-gray-800 mb-3">상품 설명</h3>
+                    <div id="productDescription" class="text-gray-700 whitespace-pre-wrap">설명이 없습니다.</div>
+                </div>
+            </div>
+
+            <!-- 판매자 정보 -->
+            <div class="bg-white rounded-2xl p-6 shadow-sm mb-6">
+                <h3 class="font-medium text-gray-800 mb-4">판매자 정보</h3>
+                <div id="sellerInfo" class="flex items-center space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-pi-orange to-pi-yellow rounded-full flex items-center justify-center text-white font-bold text-lg">
+                        S
+                    </div>
+                    <div class="flex-1">
+                        <div class="font-medium text-gray-800">판매자명</div>
+                        <div class="text-sm text-gray-500">@username</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 상품 없음 -->
+        <div id="noProduct" class="hidden text-center py-12">
+            <div class="text-gray-400 mb-4">
+                <i class="fas fa-exclamation-triangle text-6xl"></i>
+            </div>
+            <h2 class="text-xl font-bold text-gray-800 mb-2">상품을 찾을 수 없습니다</h2>
+            <p class="text-gray-600 mb-6">삭제되었거나 존재하지 않는 상품입니다.</p>
+            <button onclick="history.back()" class="px-6 py-3 bg-pi-orange text-white rounded-lg hover:bg-orange-600 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>
+                돌아가기
+            </button>
+        </div>
+    </main>
+
+    <!-- 하단 액션 바 -->
+    <div id="actionBar" class="hidden fixed bottom-0 left-0 right-0 bg-white border-t p-4 z-40">
+        <div class="max-w-4xl mx-auto flex items-center space-x-3">
+            <!-- 좋아요 버튼 -->
+            <button id="bottomLikeBtn" class="p-3 border border-gray-300 rounded-lg hover:border-red-500 hover:text-red-500 transition-colors">
+                <i class="far fa-heart text-xl"></i>
+            </button>
+            
+            <!-- 채팅하기 버튼 -->
+            <button id="chatBtn" class="flex-1 py-3 bg-pi-orange text-white rounded-lg hover:bg-orange-600 transition-colors font-medium">
+                <i class="fas fa-comments mr-2"></i>
+                채팅하기
+            </button>
+        </div>
+    </div>
+
+    <!-- 로딩 오버레이 -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 text-center">
+            <div class="spinner mx-auto mb-4"></div>
+            <p class="text-gray-700 font-medium">채팅방을 생성하는 중...</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="/static/product.js"></script>
+</body>
+</html>
