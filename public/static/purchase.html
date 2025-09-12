@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>π-coin 구매 - 파이코인 당근</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pi-orange': '#FF6600',
+                        'pi-yellow': '#FFD700',
+                        'carrot-orange': '#FF7E36'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #FF6600 0%, #FFD700 100%);
+        }
+        .package-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .package-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .popular-badge {
+            background: linear-gradient(135deg, #FF6600, #FF7E36);
+        }
+        .coin-icon {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+        .purchase-button {
+            background: linear-gradient(135deg, #FF6600, #FF7E36);
+            transition: all 0.3s ease;
+        }
+        .purchase-button:hover {
+            background: linear-gradient(135deg, #FF7E36, #FF6600);
+            transform: scale(1.02);
+        }
+        .balance-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- 헤더 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <button onclick="history.back()" class="flex items-center text-gray-600 hover:text-pi-orange transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    <span class="font-medium">뒤로가기</span>
+                </button>
+                
+                <div class="flex items-center space-x-2">
+                    <div class="coin-icon w-8 h-8 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold">π</span>
+                    </div>
+                    <h1 class="text-lg font-bold text-gray-800">π-coin 구매</h1>
+                </div>
+                
+                <div class="w-20"></div> <!-- 균형 맞추기 -->
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="max-w-4xl mx-auto px-4 py-6 pb-32">
+        <!-- 현재 잔액 카드 -->
+        <div class="balance-card rounded-2xl p-6 text-white mb-8">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-lg font-medium opacity-90">현재 π-coin 잔액</h2>
+                    <div class="flex items-center mt-2">
+                        <span id="currentBalance" class="text-3xl font-bold">0 π-coin</span>
+                    </div>
+                    <p class="text-sm opacity-75 mt-1">안전하고 편리한 파이코인으로 거래하세요</p>
+                </div>
+                <div class="coin-icon w-16 h-16 rounded-2xl flex items-center justify-center">
+                    <span class="text-white text-2xl font-bold">π</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 패키지 목록 -->
+        <div class="mb-6">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">π-coin 구매 패키지</h3>
+            <p class="text-gray-600 text-sm mb-6">필요한 만큼 π-coin을 구매하여 편리하게 거래하세요</p>
+        </div>
+
+        <div id="packageList" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+            <!-- 패키지 카드들이 동적으로 로드됩니다 -->
+        </div>
+
+        <!-- 결제 방법 선택 -->
+        <div class="bg-white rounded-2xl p-6 mb-6 shadow-sm">
+            <h4 class="text-lg font-bold text-gray-800 mb-4">결제 방법 선택</h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <label class="payment-method-card flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pi-orange transition-colors">
+                    <input type="radio" name="paymentMethod" value="card" class="sr-only" checked>
+                    <div class="flex items-center w-full">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-credit-card text-blue-600"></i>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">신용카드</div>
+                            <div class="text-sm text-gray-500">빠르고 안전한 결제</div>
+                        </div>
+                        <div class="ml-auto">
+                            <div class="w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                <div class="w-3 h-3 bg-pi-orange rounded-full opacity-0 method-indicator"></div>
+                            </div>
+                        </div>
+                    </div>
+                </label>
+
+                <label class="payment-method-card flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pi-orange transition-colors">
+                    <input type="radio" name="paymentMethod" value="kakao" class="sr-only">
+                    <div class="flex items-center w-full">
+                        <div class="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-comment text-yellow-600"></i>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">카카오페이</div>
+                            <div class="text-sm text-gray-500">간편 결제</div>
+                        </div>
+                        <div class="ml-auto">
+                            <div class="w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                <div class="w-3 h-3 bg-pi-orange rounded-full opacity-0 method-indicator"></div>
+                            </div>
+                        </div>
+                    </div>
+                </label>
+
+                <label class="payment-method-card flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pi-orange transition-colors">
+                    <input type="radio" name="paymentMethod" value="toss" class="sr-only">
+                    <div class="flex items-center w-full">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <i class="fas fa-mobile-alt text-blue-600"></i>
+                        </div>
+                        <div>
+                            <div class="font-medium text-gray-800">토스페이</div>
+                            <div class="text-sm text-gray-500">토스로 간편하게</div>
+                        </div>
+                        <div class="ml-auto">
+                            <div class="w-5 h-5 border-2 border-gray-300 rounded-full flex items-center justify-center">
+                                <div class="w-3 h-3 bg-pi-orange rounded-full opacity-0 method-indicator"></div>
+                            </div>
+                        </div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <!-- 주의사항 -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <i class="fas fa-info-circle text-blue-500 mt-0.5"></i>
+                </div>
+                <div class="ml-3">
+                    <h4 class="text-sm font-medium text-blue-800">구매 안내</h4>
+                    <div class="mt-2 text-sm text-blue-700">
+                        <ul class="list-disc list-inside space-y-1">
+                            <li>구매한 π-coin은 즉시 계정에 충전됩니다</li>
+                            <li>π-coin은 파이코인 당근 내에서만 사용 가능합니다</li>
+                            <li>결제 후 취소/환불은 고객센터를 통해 문의해 주세요</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 하단 고정 구매 버튼 영역 -->
+    <div id="purchaseBottomSheet" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-4 shadow-lg transform translate-y-full transition-transform duration-300 ease-in-out hidden">
+        <div class="max-w-4xl mx-auto">
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <div id="selectedPackageName" class="font-bold text-gray-800"></div>
+                    <div id="selectedPackageDetails" class="text-sm text-gray-600"></div>
+                </div>
+                <div class="text-right">
+                    <div id="selectedPackagePrice" class="text-xl font-bold text-pi-orange"></div>
+                    <div class="text-sm text-gray-500">결제 금액</div>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="closePurchaseSheet()" class="py-3 px-6 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                    취소
+                </button>
+                <button onclick="processPurchase()" class="purchase-button py-3 px-6 rounded-xl font-bold text-white">
+                    <i class="fas fa-lock mr-2"></i>
+                    안전하게 결제하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 토스트 메시지 컨테이너 -->
+    <div id="toastContainer" class="fixed top-20 right-4 z-50 space-y-2"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="/static/purchase.js"></script>
+</body>
+</html>

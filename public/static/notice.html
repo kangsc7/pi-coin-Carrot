@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공지사항 - 파이코인 당근</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pi-orange': '#FF6600',
+                        'pi-yellow': '#FFD700',
+                        'carrot-orange': '#FF7E36'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .notice-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #e5e7eb;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .notice-card:hover {
+            transform: translateY(-12px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 2px rgba(255, 102, 0, 0.1);
+            border-color: #FF6600;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #FF6600 0%, #FFD700 100%);
+        }
+        .blog-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .notice-important {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        .notice-update {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .notice-event {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        .notice-maintenance {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- 헤더 -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <button onclick="history.back()" class="flex items-center text-gray-600 hover:text-pi-orange transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    <span class="font-medium">뒤로가기</span>
+                </button>
+                
+                <div class="flex items-center space-x-2">
+                    <div class="w-8 h-8 bg-gradient-to-br from-pi-orange to-carrot-orange rounded-lg flex items-center justify-center">
+                        <i class="fas fa-bullhorn text-white text-sm"></i>
+                    </div>
+                    <h1 class="text-lg font-bold text-gray-800">공지사항</h1>
+                </div>
+                
+                <button onclick="window.location.href='/'" class="text-gray-600 hover:text-pi-orange transition-colors">
+                    <i class="fas fa-home text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 블로그 헤더 -->
+    <section class="blog-header text-white py-12">
+        <div class="max-w-4xl mx-auto px-4 text-center">
+            <h1 class="text-4xl font-bold mb-4">📢 파이코인 당근 공지사항</h1>
+            <p class="text-xl opacity-90 mb-6">중요한 소식과 업데이트를 확인하세요</p>
+            <div class="flex items-center justify-center space-x-6 text-sm opacity-75">
+                <div class="flex items-center">
+                    <i class="fas fa-calendar mr-2"></i>
+                    <span>정기 업데이트</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-bell mr-2"></i>
+                    <span>실시간 알림</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-shield-alt mr-2"></i>
+                    <span>보안 정책</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 메인 컨텐츠 -->
+    <main class="max-w-4xl mx-auto px-4 py-8">
+        <!-- 필터 탭과 관리자 버튼 -->
+        <div class="mb-8">
+            <div class="flex flex-wrap justify-between items-center mb-6">
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="filterNotices('all')" class="filter-tab active px-4 py-2 rounded-full text-sm font-medium transition-colors bg-pi-orange text-white">
+                        전체 공지
+                    </button>
+                    <button onclick="filterNotices('important')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300">
+                        중요 공지
+                    </button>
+                    <button onclick="filterNotices('update')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300">
+                        업데이트
+                    </button>
+                    <button onclick="filterNotices('event')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300">
+                        이벤트
+                    </button>
+                    <button onclick="filterNotices('maintenance')" class="filter-tab px-4 py-2 rounded-full text-sm font-medium transition-colors bg-gray-200 text-gray-700 hover:bg-gray-300">
+                        점검 안내
+                    </button>
+                </div>
+                
+                <!-- 관리자 전용 작성 버튼 -->
+                <button id="adminWriteBtn" onclick="openNoticeWriteModal()" class="hidden bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 shadow-lg">
+                    <i class="fas fa-edit mr-2"></i>공지 작성
+                </button>
+            </div>
+        </div>
+
+        <!-- 공지사항 목록 -->
+        <div id="noticeList" class="space-y-6">
+            <!-- 동적으로 로드되는 공지사항들이 여기에 표시됩니다 -->
+        </div>
+
+        <!-- 더보기 버튼 -->
+        <div class="text-center mt-12">
+            <button onclick="loadMoreNotices()" class="px-8 py-3 bg-pi-orange text-white rounded-xl font-medium hover:bg-orange-600 transition-colors">
+                <i class="fas fa-chevron-down mr-2"></i>
+                더 많은 공지사항 보기
+            </button>
+        </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="bg-white border-t border-gray-200 mt-16">
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <div class="text-center">
+                <div class="flex items-center justify-center space-x-2 mb-4">
+                    <div class="w-8 h-8 bg-gradient-to-br from-pi-orange to-carrot-orange rounded-lg flex items-center justify-center">
+                        <span class="text-white font-bold text-sm">🥕</span>
+                    </div>
+                    <span class="font-bold text-gray-800">파이코인 당근</span>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">안전하고 편리한 중고거래 플랫폼</p>
+                <div class="flex justify-center space-x-6 text-sm text-gray-500">
+                    <button onclick="window.location.href='/'">홈으로</button>
+                    <button>이용약관</button>
+                    <button>개인정보처리방침</button>
+                    <button>고객센터</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 공지사항 작성 모달 (관리자 전용) -->
+    <div id="noticeWriteModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 w-full max-w-2xl mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-edit text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-800">공지사항 작성</h3>
+                <p class="text-gray-600 mt-2">새로운 공지사항을 등록하세요</p>
+            </div>
+            
+            <form id="noticeWriteForm" class="space-y-6">
+                <!-- 제목 입력 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-heading mr-1"></i>제목
+                    </label>
+                    <input type="text" name="title" id="noticeTitle" required 
+                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-pi-orange transition-colors"
+                           placeholder="공지사항 제목을 입력하세요">
+                </div>
+
+                <!-- 카테고리 선택 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-tag mr-1"></i>카테고리
+                    </label>
+                    <select name="category" id="noticeCategory" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-pi-orange transition-colors">
+                        <option value="important">중요 공지</option>
+                        <option value="update">업데이트</option>
+                        <option value="event">이벤트</option>
+                        <option value="maintenance">점검 안내</option>
+                    </select>
+                </div>
+
+                <!-- 중요 공지 여부 -->
+                <div>
+                    <label class="flex items-center">
+                        <input type="checkbox" name="isPinned" id="noticeIsPinned" class="mr-2 w-4 h-4 text-pi-orange bg-gray-100 border-gray-300 rounded focus:ring-pi-orange">
+                        <span class="text-sm font-medium text-gray-700">
+                            <i class="fas fa-thumbtack mr-1"></i>상단 고정 (중요 공지)
+                        </span>
+                    </label>
+                </div>
+
+                <!-- 이미지 URL -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-image mr-1"></i>이미지 URL (선택사항)
+                    </label>
+                    <input type="url" name="imageUrl" id="noticeImageUrl"
+                           class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-pi-orange transition-colors"
+                           placeholder="https://example.com/image.jpg">
+                    <p class="text-xs text-gray-500 mt-2">공지사항에 표시할 이미지 URL을 입력하세요</p>
+                </div>
+
+                <!-- 내용 입력 -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-align-left mr-1"></i>내용
+                    </label>
+                    <textarea name="content" id="noticeContent" required rows="8"
+                              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-pi-orange transition-colors resize-none"
+                              placeholder="공지사항 내용을 입력하세요. HTML 태그를 사용할 수 있습니다."></textarea>
+                    <p class="text-xs text-gray-500 mt-2">마크다운 형식 및 기본 HTML 태그를 지원합니다</p>
+                </div>
+
+                <!-- 미리보기 영역 -->
+                <div id="previewArea" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-eye mr-1"></i>미리보기
+                    </label>
+                    <div id="previewContent" class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <!-- 미리보기 내용이 여기에 표시됩니다 -->
+                    </div>
+                </div>
+
+                <!-- 버튼 영역 -->
+                <div class="flex space-x-3 pt-4">
+                    <button type="button" onclick="previewNotice()" 
+                            class="flex-1 px-4 py-3 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        <i class="fas fa-eye mr-2"></i>미리보기
+                    </button>
+                    <button type="button" onclick="closeNoticeWriteModal()" 
+                            class="flex-1 px-4 py-3 border border-gray-300 rounded-xl font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+                        취소
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 px-4 py-3 bg-gradient-to-r from-pi-orange to-carrot-orange text-white rounded-xl font-medium hover:from-orange-600 hover:to-orange-700 transition-colors">
+                        <i class="fas fa-save mr-2"></i>등록
+                    </button>
+                </div>
+            </form>
+            
+            <button onclick="closeNoticeWriteModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="/static/notice.js"></script>
+</body>
+</html>

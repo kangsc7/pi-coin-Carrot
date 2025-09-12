@@ -49,12 +49,15 @@
 
 /* 카테고리 카드 */
 .category-card {
-  @apply bg-white rounded-xl p-4 text-center shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer border border-gray-100;
+  @apply bg-white rounded-xl p-4 text-center cursor-pointer border-2 border-gray-200;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .category-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-8px) scale(1.02);
   border-color: #FF6600;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04), 0 0 0 2px rgba(255, 102, 0, 0.1);
 }
 
 .category-card.active {
@@ -63,11 +66,15 @@
 
 /* 상품 카드 */
 .product-card {
-  @apply bg-white rounded-xl shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer overflow-hidden border border-gray-100;
+  @apply bg-white rounded-xl cursor-pointer overflow-hidden border-2 border-gray-200;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .product-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-12px) scale(1.03);
+  border-color: #FF6600;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 2px rgba(255, 102, 0, 0.1);
 }
 
 .product-image {
@@ -91,29 +98,47 @@
   @apply text-sm font-medium text-orange-600 bg-orange-100 px-2 py-1 rounded-full;
 }
 
-/* 상태 배지 */
+/* 상태 배지 - 개선된 가독성 */
 .status-badge {
-  @apply inline-block px-2 py-1 text-xs font-medium rounded-full;
+  @apply inline-block px-3 py-1.5 text-xs font-bold rounded-full shadow-sm backdrop-blur-sm border border-white border-opacity-20;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
 }
 
 .status-new {
-  @apply bg-green-100 text-green-800;
+  @apply text-green-900 shadow-green-200;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.9), rgba(5, 150, 105, 0.95));
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .status-like-new {
-  @apply bg-blue-100 text-blue-800;
+  @apply text-blue-900 shadow-blue-200;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.95));
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .status-good {
-  @apply bg-yellow-100 text-yellow-800;
+  @apply text-yellow-900 shadow-yellow-200;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.9), rgba(217, 119, 6, 0.95));
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .status-fair {
-  @apply bg-orange-100 text-orange-800;
+  @apply text-orange-900 shadow-orange-200;
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.9), rgba(234, 88, 12, 0.95));
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .status-poor {
-  @apply bg-red-100 text-red-800;
+  @apply text-red-900 shadow-red-200;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.9), rgba(220, 38, 38, 0.95));
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* 모달 애니메이션 */
@@ -168,6 +193,11 @@
 /* 업로드 영역 */
 .upload-area {
   @apply border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-orange-500 transition-colors cursor-pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
 }
 
 .upload-area.dragover {
@@ -179,7 +209,9 @@
 }
 
 .image-preview img {
-  @apply w-20 h-20 object-cover rounded-lg border border-gray-200;
+  @apply w-24 h-24 object-cover rounded-lg border border-gray-200;
+  display: block;
+  margin: 0 auto;
 }
 
 .image-preview .remove-btn {
@@ -241,4 +273,727 @@
   0% { transform: scale(1); }
   50% { transform: scale(1.3); }
   100% { transform: scale(1); }
+}
+
+/* π-coin 구매 페이지 스타일 */
+.package-card {
+  @apply bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden border-2 border-transparent relative p-6;
+}
+
+.package-card:hover {
+  transform: translateY(-4px);
+  @apply border-pi-orange;
+}
+
+.package-card.popular {
+  @apply border-pi-orange bg-gradient-to-br from-orange-50 to-yellow-50;
+}
+
+.popular-badge {
+  @apply absolute top-0 right-0 bg-pi-orange text-white px-3 py-1 text-xs font-bold;
+  border-radius: 0 16px 0 16px;
+}
+
+.package-header {
+  @apply text-center mb-4;
+}
+
+.package-amount {
+  @apply text-3xl font-bold text-gray-800 mb-2;
+}
+
+.bonus {
+  @apply text-sm font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full inline-block;
+}
+
+.package-price {
+  @apply text-center mb-4 pb-4 border-b border-gray-200;
+}
+
+.krw-price {
+  @apply text-2xl font-bold text-gray-800;
+}
+
+.total-amount {
+  @apply text-sm text-gray-600 mt-1;
+}
+
+.package-info {
+  @apply text-center text-sm text-gray-600 mb-6;
+}
+
+.per-coin {
+  @apply mb-1;
+}
+
+.bonus-info {
+  @apply text-green-600 font-medium;
+}
+
+.purchase-btn {
+  @apply w-full bg-pi-orange text-white py-3 rounded-lg hover:bg-orange-600 transition-colors font-medium;
+}
+
+.package-card.popular .purchase-btn {
+  @apply bg-gradient-to-r from-pi-orange to-carrot-orange hover:from-orange-600 hover:to-orange-700;
+}
+
+/* 관리자 문의 버튼 */
+.admin-contact-btn {
+  @apply fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center z-40;
+}
+
+.admin-contact-btn:hover {
+  transform: scale(1.1);
+}
+
+.admin-contact-pulse {
+  @apply absolute inset-0 rounded-full bg-blue-500 opacity-75;
+  animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* 관리자 대시보드 스타일 */
+.dashboard-card {
+  @apply bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-300 p-6;
+}
+
+.stat-card {
+  @apply bg-gradient-to-br text-white rounded-xl p-6 relative overflow-hidden;
+}
+
+.stat-card::before {
+  content: '';
+  @apply absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full transform translate-x-8 -translate-y-8;
+}
+
+.stat-number {
+  @apply text-3xl font-bold mb-2;
+}
+
+.stat-label {
+  @apply text-sm opacity-90;
+}
+
+.stat-icon {
+  @apply absolute bottom-4 right-4 text-3xl opacity-20;
+}
+
+/* 데이터 테이블 스타일 */
+.data-table {
+  @apply w-full bg-white rounded-lg shadow-sm overflow-hidden;
+}
+
+.data-table th {
+  @apply bg-gray-50 px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+}
+
+.data-table td {
+  @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900 border-b border-gray-200;
+}
+
+.data-table tbody tr:hover {
+  @apply bg-gray-50;
+}
+
+/* 액션 버튼 */
+.action-btn {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium transition-colors;
+}
+
+.action-btn.hide {
+  @apply bg-yellow-100 text-yellow-800 hover:bg-yellow-200;
+}
+
+.action-btn.delete {
+  @apply bg-red-100 text-red-800 hover:bg-red-200;
+}
+
+.action-btn.view {
+  @apply bg-blue-100 text-blue-800 hover:bg-blue-200;
+}
+
+/* 채팅 위젯 */
+.chat-widget {
+  @apply fixed bottom-24 right-6 w-80 bg-white rounded-2xl shadow-2xl z-50 border border-gray-200;
+  max-height: 500px;
+}
+
+.chat-header {
+  @apply bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-t-2xl flex items-center justify-between;
+}
+
+.chat-body {
+  @apply p-4 h-64 overflow-y-auto bg-gray-50;
+}
+
+.chat-input-area {
+  @apply p-4 border-t border-gray-200 bg-white rounded-b-2xl;
+}
+
+.chat-input {
+  @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-sm;
+}
+
+.chat-send-btn {
+  @apply ml-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors;
+}
+
+/* 알림 배지 */
+.notification-badge {
+  @apply absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold;
+  min-width: 24px;
+}
+
+/* 상태 인디케이터 */
+.status-online {
+  @apply inline-block w-3 h-3 bg-green-400 rounded-full;
+}
+
+.status-offline {
+  @apply inline-block w-3 h-3 bg-gray-400 rounded-full;
+}
+
+/* 텍스트 줄임 */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.5;
+  word-break: keep-all;
+  word-wrap: break-word;
+}
+
+/* 상품 제목 개선 */
+.product-title {
+  @apply font-semibold text-gray-800 text-base leading-relaxed mb-3 line-clamp-2;
+  min-height: 2.8rem; /* 2줄 고정 높이 */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.4;
+  word-break: keep-all;
+  word-wrap: break-word;
+  letter-spacing: -0.02em;
+}
+
+/* 개선된 스마트 필터 */
+.smart-filter-panel {
+  @apply bg-white rounded-2xl shadow-xl mb-8 border border-gray-100;
+  background: linear-gradient(145deg, #ffffff 0%, #fafbfc 100%);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+/* 개선된 필터 헤더 */
+.filter-header-modern {
+  @apply px-6 py-4 bg-gradient-to-r from-pi-orange to-pi-yellow rounded-t-2xl border-b border-orange-200;
+}
+
+.filter-title-modern {
+  @apply flex items-center text-white;
+}
+
+.title-text {
+  @apply text-lg font-bold leading-tight text-center;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.filter-close-modern {
+  @apply text-white hover:text-orange-200 text-2xl transition-colors p-2 rounded-full hover:bg-white hover:bg-opacity-20;
+}
+
+/* 개선된 필터 본문 */
+.filter-body-modern {
+  @apply p-6 grid grid-cols-1 lg:grid-cols-2 gap-8;
+}
+
+.filter-section {
+  @apply mb-8 last:mb-0;
+  background: linear-gradient(145deg, #ffffff 0%, #f9fafb 100%);
+  border-radius: 20px;
+  padding: 24px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+}
+
+.filter-section:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.15);
+}
+
+.filter-section-title {
+  @apply text-xl font-bold text-gray-800 mb-6 flex items-center;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f3f4f6;
+  position: relative;
+}
+
+.filter-section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, #FF6600, #FFD700);
+  border-radius: 2px;
+}
+
+.filter-section-icon {
+  @apply mr-3 text-pi-orange text-xl;
+  padding: 8px;
+  background: linear-gradient(135deg, rgba(255, 102, 0, 0.1), rgba(255, 215, 0, 0.1));
+  border-radius: 12px;
+  border: 1px solid rgba(255, 102, 0, 0.2);
+}
+
+.filter-group {
+  @apply mb-6 last:mb-0;
+}
+
+.filter-label {
+  @apply block text-base font-semibold text-gray-700 mb-3 flex items-center;
+}
+
+.filter-label-icon {
+  @apply mr-2 text-gray-500 text-sm;
+  padding: 6px;
+  background: #f3f4f6;
+  border-radius: 8px;
+}
+
+.filter-input {
+  @apply w-full px-5 py-4 border border-gray-200 rounded-xl focus:outline-none focus:border-pi-orange focus:ring-4 focus:ring-pi-orange focus:ring-opacity-20 transition-all duration-300;
+  font-size: 16px;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.filter-input:focus {
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px -8px rgba(255, 102, 0, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.filter-select {
+  @apply w-full px-5 py-4 border border-gray-200 rounded-xl focus:outline-none focus:border-pi-orange focus:ring-4 focus:ring-pi-orange focus:ring-opacity-20 transition-all duration-300 bg-white;
+  font-size: 16px;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.filter-select:focus {
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px -8px rgba(255, 102, 0, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* 프리미엄 가격대 필터 */
+.price-range-grid {
+  @apply grid grid-cols-2 md:grid-cols-3 gap-4 mb-6;
+}
+
+.price-range-preset {
+  @apply px-5 py-4 text-sm font-semibold border-2 border-gray-200 rounded-xl hover:border-pi-orange hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50 transition-all duration-300 cursor-pointer text-center;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.price-range-preset:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -8px rgba(255, 102, 0, 0.25);
+}
+
+.price-range-preset.active {
+  @apply border-pi-orange text-white;
+  background: linear-gradient(135deg, #FF6600 0%, #FFD700 100%);
+  box-shadow: 0 8px 25px -8px rgba(255, 102, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.price-range-custom {
+  @apply grid grid-cols-2 gap-4 mt-4;
+}
+
+.price-input {
+  @apply px-5 py-4 border border-gray-200 rounded-xl focus:outline-none focus:border-pi-orange focus:ring-4 focus:ring-pi-orange focus:ring-opacity-20 transition-all duration-300;
+  font-size: 16px;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.price-input:focus {
+  background: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px -8px rgba(255, 102, 0, 0.3), inset 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* 프리미엄 상태 필터 */
+.condition-filter-grid {
+  @apply grid grid-cols-2 md:grid-cols-5 gap-3;
+}
+
+.condition-filter-item {
+  @apply px-4 py-4 text-sm font-semibold border-2 border-gray-200 rounded-xl hover:border-pi-orange transition-all duration-300 cursor-pointer text-center flex flex-col items-center justify-center;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  min-height: 80px;
+}
+
+.condition-filter-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -8px rgba(255, 102, 0, 0.25);
+}
+
+.condition-filter-item.active {
+  @apply border-pi-orange text-white;
+  background: linear-gradient(135deg, #FF6600 0%, #FFD700 100%);
+  box-shadow: 0 8px 25px -8px rgba(255, 102, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.condition-filter-badge {
+  @apply inline-block w-4 h-4 rounded-full mb-2;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 프리미엄 필터 액션 버튼 */
+.filter-actions {
+  @apply flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-6 mt-6;
+  border-top: 2px solid #f3f4f6;
+}
+
+.filter-apply-btn {
+  @apply flex-1 px-8 py-4 text-white rounded-xl font-bold hover:shadow-lg transition-all duration-300 text-lg;
+  background: linear-gradient(135deg, #FF6600 0%, #FFD700 100%);
+  box-shadow: 0 8px 25px -8px rgba(255, 102, 0, 0.4);
+}
+
+.filter-apply-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 35px -5px rgba(255, 102, 0, 0.5);
+}
+
+.filter-reset-btn {
+  @apply px-8 py-4 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 text-lg;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.filter-reset-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.1);
+}
+
+/* 프리미엄 활성 필터 표시 */
+.active-filters {
+  @apply flex flex-wrap gap-3 mb-6 p-4;
+  background: linear-gradient(145deg, #f8fafc 0%, #f1f5f9 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.active-filter-tag {
+  @apply inline-flex items-center px-4 py-2 text-white text-sm rounded-full font-semibold;
+  background: linear-gradient(135deg, #FF6600 0%, #FFD700 100%);
+  box-shadow: 0 4px 12px -4px rgba(255, 102, 0, 0.4);
+}
+
+.active-filter-remove {
+  @apply ml-2 text-white hover:text-orange-200 cursor-pointer transition-colors;
+  padding: 2px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.active-filter-remove:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 필터 토글 버튼 개선 */
+.filter-toggle-btn {
+  @apply inline-flex items-center px-4 py-2 border-2 border-gray-300 rounded-xl text-sm font-semibold text-gray-700 bg-white hover:bg-gradient-to-r hover:from-orange-50 hover:to-yellow-50 hover:border-pi-orange hover:text-pi-orange focus:outline-none focus:ring-4 focus:ring-pi-orange focus:ring-opacity-20 transition-all duration-300;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.filter-toggle-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px -8px rgba(255, 102, 0, 0.25);
+}
+
+.filter-toggle-btn.active {
+  @apply border-pi-orange text-white;
+  background: linear-gradient(135deg, #FF6600 0%, #FFD700 100%);
+  box-shadow: 0 8px 25px -8px rgba(255, 102, 0, 0.4);
+  transform: translateY(-1px);
+}
+
+.filter-toggle-btn .fa-chevron-down {
+  transition: transform 0.3s ease;
+}
+
+/* 필터 패널 애니메이션 */
+.search-filters.filter-slide-in {
+  animation: filterSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.search-filters.filter-slide-out {
+  animation: filterSlideOut 0.3s ease-in-out;
+}
+
+@keyframes filterSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes filterSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+}
+
+/* 필터 섹션 스타일 */
+.filter-section-left, .filter-section-right {
+  @apply bg-gray-50 rounded-xl p-5 border border-gray-200;
+}
+
+.filter-section-title {
+  @apply text-lg font-bold text-gray-800 mb-4 pb-2 border-b-2 border-pi-orange flex items-center;
+}
+
+.filter-section-title::before {
+  content: '';
+  @apply w-1 h-6 bg-pi-orange rounded-full mr-3;
+}
+
+/* 테이블 형태 필터 */
+.filter-table {
+  @apply space-y-4;
+}
+
+.filter-row-table {
+  @apply grid grid-cols-3 gap-4 items-center py-3 border-b border-gray-200 last:border-b-0;
+}
+
+.filter-actions-row {
+  @apply grid-cols-1 pt-4 border-t-2 border-pi-orange;
+}
+
+.filter-label-table {
+  @apply text-sm font-semibold text-gray-700 flex items-center;
+}
+
+.filter-input-table {
+  @apply col-span-2 w-full px-4 py-3 text-sm border-2 border-gray-300 rounded-xl focus:outline-none focus:border-pi-orange focus:ring-2 focus:ring-pi-orange focus:ring-opacity-20 transition-all duration-300;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.filter-input-table:focus {
+  @apply bg-white shadow-md;
+  transform: translateY(-1px);
+}
+
+.filter-select-table {
+  @apply col-span-2 w-full px-4 py-3 text-sm border-2 border-gray-300 rounded-xl focus:outline-none focus:border-pi-orange focus:ring-2 focus:ring-pi-orange focus:ring-opacity-20 transition-all duration-300 bg-white appearance-none;
+  background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 12px center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+.filter-select-table:focus {
+  @apply bg-white shadow-md;
+  transform: translateY(-1px);
+}
+
+/* 상품 상태 버튼 (수평 배치) */
+.condition-buttons {
+  @apply flex flex-wrap gap-2 mt-1;
+}
+
+.condition-btn {
+  @apply inline-flex items-center px-3 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:border-pi-orange transition-colors cursor-pointer;
+  background: white;
+}
+
+.condition-btn.active {
+  @apply border-pi-orange bg-pi-orange text-white;
+}
+
+.condition-dot {
+  @apply w-3 h-3 rounded-full mr-2;
+}
+
+.condition-dot.new {
+  @apply bg-green-500;
+}
+
+.condition-dot.like-new {
+  @apply bg-blue-500;
+}
+
+.condition-dot.good {
+  @apply bg-yellow-500;
+}
+
+.condition-dot.fair {
+  @apply bg-orange-500;
+}
+
+.condition-dot.poor {
+  @apply bg-red-500;
+}
+
+/* 개선된 액션 버튼 */
+.filter-actions-modern {
+  @apply flex gap-3 w-full;
+}
+
+.modern-reset-btn {
+  @apply flex-1 px-4 py-3 text-sm border-2 border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 font-semibold;
+}
+
+.modern-reset-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.modern-apply-btn {
+  @apply flex-1 px-4 py-3 text-sm bg-gradient-to-r from-pi-orange to-pi-yellow text-white rounded-xl hover:from-orange-600 hover:to-orange-500 transition-all duration-300 font-semibold shadow-md;
+}
+
+.modern-apply-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 102, 0, 0.4);
+}
+
+/* 필터 패널 애니메이션 */
+.smart-filter-panel.filter-slide-in {
+  animation: modernFilterSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.smart-filter-panel.filter-slide-out {
+  animation: modernFilterSlideOut 0.3s ease-in-out;
+}
+
+@keyframes modernFilterSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes modernFilterSlideOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+}
+
+/* 카페 스타일 필터 사이드바 */
+.cafe-filter-sidebar {
+  border: 2px solid #f3f4f6;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: all 0.3s ease;
+}
+
+.cafe-filter-sidebar:hover {
+  border-color: #e5e7eb;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+.cafe-filter-item {
+  @apply text-gray-700 font-medium;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+}
+
+.cafe-filter-item:hover {
+  @apply bg-orange-50 text-pi-orange;
+  transform: translateX(4px);
+}
+
+.cafe-filter-item.active {
+  @apply bg-pi-orange text-white;
+  box-shadow: 0 4px 8px rgba(255, 102, 0, 0.3);
+}
+
+.cafe-price-filter, .cafe-condition-filter {
+  @apply text-gray-600;
+  transition: all 0.2s ease;
+}
+
+.cafe-price-filter:hover, .cafe-condition-filter:hover {
+  @apply bg-orange-50 text-pi-orange;
+  transform: translateX(2px);
+}
+
+.cafe-price-filter.active, .cafe-condition-filter.active {
+  @apply bg-orange-100 text-pi-orange font-semibold;
+}
+
+/* 반응형 개선 */
+@media (max-width: 1024px) {
+  .cafe-filter-sidebar {
+    display: none; /* 태블릿에서는 사이드바 숨김 */
+  }
+  
+  .filter-body-modern {
+    grid-template-columns: 1fr;
+    gap: 6;
+  }
+  
+  .filter-row-table {
+    grid-template-columns: 1fr;
+    gap: 2;
+    text-align: left;
+  }
+  
+  .filter-label-table {
+    margin-bottom: 8px;
+  }
+  
+  .filter-input-table, .filter-select-table {
+    col-span: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-body-modern {
+    padding: 20px;
+  }
+  
+  .filter-section-left, .filter-section-right {
+    padding: 16px;
+  }
+  
+  .filter-actions-modern {
+    flex-direction: column;
+  }
+  
+  .title-text {
+    font-size: 16px;
+  }
 }

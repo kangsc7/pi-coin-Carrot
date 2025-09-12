@@ -7,12 +7,18 @@ class ProductSell {
     this.uploadedImages = []
     this.maxImages = 3
     this.todayPostCount = 0
+    this.piCoinPrice = 0.5 // 기본 파이코인 가격 (KRW)
+    this.isEditMode = false
+    this.editProductId = null
+    this.editProductData = null
     
     this.init()
   }
 
   init() {
     this.checkAuth()
+    this.checkEditMode() // 수정 모드 확인
+    this.loadPiCoinPrice() // 파이코인 시세 로드
     this.loadCategories()
     this.checkTodayPostCount()
     this.setupEventListeners()
@@ -28,6 +34,175 @@ class ProductSell {
       return
     }
     this.currentUser = JSON.parse(userData)
+  }
+
+  // 수정 모드 확인
+  async checkEditMode() {
+    const urlParams = new URLSearchParams(window.location.search)
+    const editId = urlParams.get('edit')
+    
+    if (editId) {
+      this.isEditMode = true
+      this.editProductId = editId
+      
+      try {
+        // 상품 정보 로드
+        const response = await axios.get(`/api/products/${editId}`)
+        if (response.data.success) {
+          this.editProductData = response.data.product
+          
+          // 권한 확인
+          const isOwner = this.editProductData.seller_id === this.currentUser.id
+          const isAdmin = this.currentUser.email === '5321497@naver.com'
+          
+          if (!isOwner && !isAdmin) {
+            alert('상품 수정 권한이 없습니다.')
+            window.location.href = '/'
+            return
+          }
+          
+          // UI 업데이트
+          this.updateUIForEditMode()
+        } else {
+          throw new Error(response.data.error)
+        }
+      } catch (error) {
+        console.error('상품 정보 로드 실패:', error)
+        alert('상품 정보를 불러올 수 없습니다.')
+        window.location.href = '/'
+      }
+    }
+  }
+
+  // 수정 모드용 UI 업데이트
+  updateUIForEditMode() {
+    if (!this.isEditMode || !this.editProductData) return
+    
+    // 페이지 제목 변경
+    document.title = '상품 수정 - 파이코인 당근 🥕'
+    
+    // 헤더 제목 변경
+    const headerTitle = document.querySelector('.header-title')
+    if (headerTitle) {
+      headerTitle.textContent = '상품 수정'
+    }
+    
+    // 제출 버튼 텍스트 변경
+    const submitBtn = document.getElementById('submitBtn')
+    if (submitBtn) {
+      submitBtn.innerHTML = '<i class="fas fa-edit mr-2"></i>수정 완료'
+    }
+    
+    // 폼에 기존 데이터 설정
+    setTimeout(() => {
+      this.fillFormWithExistingData()
+    }, 500) // 카테고리 로드 후 실행
+  }
+
+  // 폼에 기존 데이터 채우기
+  fillFormWithExistingData() {
+    if (!this.editProductData) return
+    
+    const product = this.editProductData
+    
+    // 기본 정보 설정
+    document.getElementById('productTitle').value = product.title
+    document.getElementById('productDescription').value = product.description || ''
+    document.getElementById('productPrice').value = product.price
+    document.getElementById('productLocation').value = product.location || ''
+    
+    // 카테고리 설정
+    const categorySelect = document.getElementById('productCategory')
+    if (categorySelect && product.category_id) {
+      categorySelect.value = product.category_id
+    }
+    
+    // 상품 상태 설정
+    const conditionSelect = document.getElementById('productCondition')
+    if (conditionSelect && product.condition_type) {
+      conditionSelect.value = product.condition_type
+    }
+    
+    // 가격 정보 업데이트
+    this.updatePriceInfo()
+    
+    // 기존 이미지 표시 (참고용)
+    if (product.images && product.images.length > 0) {
+      this.showExistingImages(product.images)
+    }
+  }
+
+  // 기존 이미지 표시 (참고용)
+  showExistingImages(images) {
+    const previewContainer = document.getElementById('imagePreview')
+    if (!previewContainer) return
+    
+    const existingImagesHtml = `
+      <div class="mb-4 p-3 bg-blue-50 rounded-lg">
+        <h4 class="text-sm font-medium text-blue-800 mb-2">현재 등록된 이미지</h4>
+        <div class="grid grid-cols-3 gap-2">
+          ${images.map((img, index) => `
+            <div class="relative">
+              <img src="${img.image_url}" alt="기존 이미지 ${index + 1}" 
+                   class="w-full h-20 object-cover rounded border-2 border-blue-200">
+              <div class="absolute top-1 right-1 bg-blue-600 text-white text-xs px-1 rounded">
+                ${index + 1}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+        <p class="text-xs text-blue-600 mt-2">
+          새로운 이미지를 업로드하면 기존 이미지를 대체합니다.
+        </p>
+      </div>
+    `
+    
+    previewContainer.insertAdjacentHTML('afterbegin', existingImagesHtml)
+  }
+
+  // 파이코인 시세 로드
+  async loadPiCoinPrice() {
+    try {
+      const response = await axios.get('/api/pi-coin-price')
+      if (response.data.success) {
+        this.piCoinPrice = response.data.price
+        this.updatePriceInfo()
+        
+        // 콘솔에 시세 정보 표시
+        console.log('파이코인 시세:', this.piCoinPrice, 'KRW')
+        if (response.data.cached) {
+          console.log('(캐시된 데이터)')
+        }
+      }
+    } catch (error) {
+      console.error('파이코인 시세 로드 실패:', error)
+      this.piCoinPrice = 0.5 // 기본값 설정
+    }
+  }
+
+  // 가격 정보 업데이트
+  updatePriceInfo() {
+    // 파이코인 가격 정보 표시 (라벨에 추가)
+    const piPriceLabel = document.querySelector('label[for="piPrice"], input[name="piPrice"]').closest('div').querySelector('label')
+    if (piPriceLabel) {
+      piPriceLabel.innerHTML = `파이코인 가격 * <span class="text-xs text-gray-500">(1π = ${this.formatPrice(this.piCoinPrice)}원)</span>`
+    }
+  }
+
+  // KRW 가격을 파이코인으로 변환
+  convertKrwToPiCoin(krwAmount) {
+    if (this.piCoinPrice <= 0) return 0
+    return (krwAmount / this.piCoinPrice).toFixed(3) // 소수점 3자리
+  }
+
+  // 파이코인을 KRW로 변환
+  convertPiCoinToKrw(piAmount) {
+    return Math.round(piAmount * this.piCoinPrice)
+  }
+
+  // 가격 포맷팅
+  formatPrice(price) {
+    return new Intl.NumberFormat('ko-KR').format(price)
   }
 
   // 카테고리 로드
@@ -120,18 +295,25 @@ class ProductSell {
       this.handleSubmit(e)
     })
 
-    // 가격 자동 계산 (원화 -> 파이코인)
+    // 가격 자동 계산 (실시간 파이코인 시세 적용)
     const priceInput = document.querySelector('input[name="price"]')
     const piPriceInput = document.querySelector('input[name="piPrice"]')
     
+    // 원화 -> 파이코인 자동 계산
     priceInput.addEventListener('input', (e) => {
       const krwPrice = parseFloat(e.target.value) || 0
-      const piPrice = (krwPrice / 10000).toFixed(1) // 1만원 = 1 파이코인 기준
+      const piPrice = this.convertKrwToPiCoin(krwPrice)
       piPriceInput.value = piPrice
       this.validateForm()
     })
 
-    piPriceInput.addEventListener('input', () => this.validateForm())
+    // 파이코인 -> 원화 자동 계산
+    piPriceInput.addEventListener('input', (e) => {
+      const piAmount = parseFloat(e.target.value) || 0
+      const krwPrice = this.convertPiCoinToKrw(piAmount)
+      priceInput.value = krwPrice
+      this.validateForm()
+    })
   }
 
   // 이미지 업로드 설정
@@ -310,12 +492,14 @@ class ProductSell {
   async handleSubmit(e) {
     e.preventDefault()
 
-    if (this.todayPostCount >= 3) {
+    // 수정 모드가 아닌 경우만 일일 게시물 제한 확인
+    if (!this.isEditMode && this.todayPostCount >= 3) {
       this.showToast('오늘은 더 이상 상품을 등록할 수 없습니다.', 'error')
       return
     }
 
-    if (this.uploadedImages.length === 0) {
+    // 수정 모드가 아닌 경우만 이미지 필수 확인
+    if (!this.isEditMode && this.uploadedImages.length === 0) {
       this.showToast('최소 1장의 사진을 업로드해야 합니다.', 'error')
       return
     }
@@ -325,34 +509,75 @@ class ProductSell {
     document.getElementById('loadingOverlay').classList.add('flex')
 
     try {
-      const form = document.getElementById('sellForm')
-      const formData = new FormData(form)
-      
-      // 이미지 파일들 추가
-      this.uploadedImages.forEach((imageData, index) => {
-        formData.append(`image_${index}`, imageData.file)
-      })
-
-      formData.append('userId', this.currentUser.id)
-
-      const response = await axios.post('/api/products', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' }
-      })
-
-      if (response.data.success) {
-        this.showToast('상품이 성공적으로 등록되었습니다!', 'success')
-        setTimeout(() => {
-          window.location.href = '/'
-        }, 2000)
+      if (this.isEditMode) {
+        // 수정 모드
+        await this.updateProduct()
       } else {
-        throw new Error(response.data.error)
+        // 등록 모드
+        await this.createProduct()
       }
     } catch (error) {
-      console.error('상품 등록 실패:', error)
-      this.showToast(error.response?.data?.error || '상품 등록에 실패했습니다.', 'error')
+      const action = this.isEditMode ? '수정' : '등록'
+      console.error(`상품 ${action} 실패:`, error)
+      this.showToast(error.response?.data?.error || `상품 ${action}에 실패했습니다.`, 'error')
     } finally {
       document.getElementById('loadingOverlay').classList.add('hidden')
       document.getElementById('loadingOverlay').classList.remove('flex')
+    }
+  }
+
+  // 새 상품 등록
+  async createProduct() {
+    const form = document.getElementById('sellForm')
+    const formData = new FormData(form)
+    
+    // 이미지 파일들 추가
+    this.uploadedImages.forEach((imageData, index) => {
+      formData.append(`image_${index}`, imageData.file)
+    })
+
+    formData.append('userId', this.currentUser.id)
+
+    const response = await axios.post('/api/products', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+
+    if (response.data.success) {
+      this.showToast('상품이 성공적으로 등록되었습니다!', 'success')
+      setTimeout(() => {
+        window.location.href = '/'
+      }, 2000)
+    } else {
+      throw new Error(response.data.error)
+    }
+  }
+
+  // 상품 수정
+  async updateProduct() {
+    const form = document.getElementById('sellForm')
+    const formData = new FormData(form)
+    
+    // JSON 데이터로 수정 (이미지는 기존 이미지 유지, 새 업로드 시에만 변경)
+    const updateData = {
+      userId: this.currentUser.id,
+      title: formData.get('title'),
+      description: formData.get('description'),
+      price: parseInt(formData.get('price')),
+      piPrice: Math.round(parseInt(formData.get('price')) / 1000),
+      location: formData.get('location'),
+      condition: formData.get('condition')
+    }
+
+    const response = await axios.put(`/api/products/${this.editProductId}`, updateData)
+
+    if (response.data.success) {
+      this.showToast('상품 정보가 성공적으로 수정되었습니다!', 'success')
+      setTimeout(() => {
+        // 상품 상세 페이지로 이동
+        window.location.href = `/static/product.html?id=${this.editProductId}`
+      }, 2000)
+    } else {
+      throw new Error(response.data.error)
     }
   }
 

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>필터 테스트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 p-8">
+    <h1 class="text-2xl font-bold mb-6">필터 기능 테스트</h1>
+    
+    <!-- 필터 버튼 -->
+    <button id="filterBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+        <i class="fas fa-filter mr-2"></i>지역 필터 열기
+    </button>
+    
+    <!-- 필터 패널 (처음에는 숨김) -->
+    <div id="filterPanel" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-xl font-bold text-gray-800">
+                    <i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>
+                    지역 필터
+                </h3>
+                <button id="closeFilter" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- 지역 필터 -->
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                        <i class="fas fa-map-marker-alt mr-2 text-blue-500"></i>
+                        지역 선택
+                    </label>
+                    
+                    <!-- 지역 선택 단계별 드롭다운 -->
+                    <div class="space-y-4">
+                        <!-- 시/도 선택 -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">시/도</label>
+                            <select id="filterCity" name="filterCity"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500">
+                                <option value="">전체 시/도</option>
+                            </select>
+                        </div>
+
+                        <!-- 구/군 선택 -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">구/군</label>
+                            <select id="filterDistrict" name="filterDistrict" disabled
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 disabled:bg-gray-100">
+                                <option value="">전체 구/군</option>
+                            </select>
+                        </div>
+
+                        <!-- 동 선택 -->
+                        <div>
+                            <label class="block text-xs font-medium text-gray-600 mb-1">동/읍/면</label>
+                            <select id="filterDong" name="filterDong" disabled
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 disabled:bg-gray-100">
+                                <option value="">전체 동/읍/면</option>
+                            </select>
+                        </div>
+
+                        <!-- 최종 지역 표시 -->
+                        <input type="hidden" id="filterLocation" name="filterLocation">
+                        
+                        <!-- 선택된 지역 표시 -->
+                        <div id="selectedLocationDisplay" class="hidden">
+                            <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                <div class="flex items-center text-sm">
+                                    <i class="fas fa-map-marker-alt text-blue-500 mr-2"></i>
+                                    <span id="selectedLocationText" class="text-gray-700"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 버튼들 -->
+            <div class="flex space-x-3 mt-8">
+                <button id="resetLocationFilter" class="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    초기화
+                </button>
+                <button id="applyLocationFilter" class="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">
+                    적용
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        console.log('테스트 페이지 로드됨');
+        
+        // 필터 버튼 클릭 이벤트
+        document.getElementById('filterBtn').addEventListener('click', function() {
+            console.log('필터 버튼 클릭됨');
+            showFilterPanel();
+        });
+        
+        // 닫기 버튼 클릭 이벤트
+        document.getElementById('closeFilter').addEventListener('click', function() {
+            console.log('닫기 버튼 클릭됨');
+            hideFilterPanel();
+        });
+        
+        // 필터 패널 표시
+        function showFilterPanel() {
+            console.log('필터 패널 표시 시작');
+            const filterPanel = document.getElementById('filterPanel');
+            
+            if (filterPanel) {
+                filterPanel.classList.remove('hidden');
+                filterPanel.classList.add('flex');
+                
+                // 지역 데이터 로드
+                populateLocationData();
+                console.log('필터 패널 표시 완료');
+            }
+        }
+        
+        // 필터 패널 숨기기
+        function hideFilterPanel() {
+            console.log('필터 패널 숨기기');
+            const filterPanel = document.getElementById('filterPanel');
+            if (filterPanel) {
+                filterPanel.classList.add('hidden');
+                filterPanel.classList.remove('flex');
+            }
+        }
+        
+        // 지역 데이터 로드
+        function populateLocationData() {
+            console.log('지역 데이터 로드 시작');
+            initializeCitySelect();
+            setupLocationEventListeners();
+        }
+        
+        // 시/도 선택 드롭다운 초기화
+        function initializeCitySelect() {
+            const citySelect = document.getElementById('filterCity');
+            if (!citySelect) {
+                console.error('filterCity 요소를 찾을 수 없습니다!');
+                return;
+            }
+
+            console.log('시/도 드롭다운 초기화 중...');
+            
+            // 기존 옵션 제거 후 기본 옵션 추가
+            citySelect.innerHTML = '<option value="">전체 시/도</option>';
+            
+            // 대한민국 주요 시/도 목록
+            const cities = [
+                '서울특별시', '부산광역시', '대구광역시', '인천광역시', 
+                '광주광역시', '대전광역시', '울산광역시', '세종특별자치시',
+                '경기도', '강원도', '충청북도', '충청남도', 
+                '전라북도', '전라남도', '경상북도', '경상남도', '제주특별자치도'
+            ];
+            
+            cities.forEach(city => {
+                const option = document.createElement('option');
+                option.value = city;
+                option.textContent = city;
+                citySelect.appendChild(option);
+            });
+            
+            console.log('시/도 옵션 추가 완료:', cities.length, '개, 총 옵션 수:', citySelect.options.length);
+        }
+        
+        // 지역 선택 이벤트 리스너 설정
+        function setupLocationEventListeners() {
+            console.log('지역 선택 이벤트 리스너 설정 시작');
+            
+            const citySelect = document.getElementById('filterCity');
+            const districtSelect = document.getElementById('filterDistrict');
+            const dongSelect = document.getElementById('filterDong');
+
+            // 시/도 선택 시
+            if (citySelect) {
+                citySelect.addEventListener('change', function(e) {
+                    const selectedCity = e.target.value;
+                    console.log('선택된 시/도:', selectedCity);
+                    
+                    if (selectedCity) {
+                        populateDistrictSelect(selectedCity);
+                        districtSelect.disabled = false;
+                        updateFinalLocation();
+                    } else {
+                        districtSelect.disabled = true;
+                        dongSelect.disabled = true;
+                        districtSelect.innerHTML = '<option value="">전체 구/군</option>';
+                        dongSelect.innerHTML = '<option value="">전체 동/읍/면</option>';
+                        updateFinalLocation();
+                    }
+                });
+            }
+
+            // 구/군 선택 시
+            if (districtSelect) {
+                districtSelect.addEventListener('change', function(e) {
+                    const selectedDistrict = e.target.value;
+                    console.log('선택된 구/군:', selectedDistrict);
+                    
+                    if (selectedDistrict) {
+                        populateDongSelect(selectedDistrict);
+                        dongSelect.disabled = false;
+                    } else {
+                        dongSelect.disabled = true;
+                        dongSelect.innerHTML = '<option value="">전체 동/읍/면</option>';
+                    }
+                    
+                    updateFinalLocation();
+                });
+            }
+
+            // 동 선택 시
+            if (dongSelect) {
+                dongSelect.addEventListener('change', function() {
+                    updateFinalLocation();
+                });
+            }
+            
+            console.log('지역 선택 이벤트 리스너 설정 완료');
+        }
+        
+        // 구/군 드롭다운 채우기
+        function populateDistrictSelect(city) {
+            const districtSelect = document.getElementById('filterDistrict');
+            if (!districtSelect) return;
+
+            console.log('구/군 드롭다운 채우기:', city);
+            districtSelect.innerHTML = '<option value="">전체 구/군</option>';
+            
+            // 간단한 구/군 목록
+            const districtData = {
+                '서울특별시': ['강남구', '강동구', '강북구', '강서구', '관악구'],
+                '경기도': ['수원시', '성남시', '안양시', '안산시', '고양시'],
+                '부산광역시': ['해운대구', '부산진구', '서구', '동구', '남구']
+            };
+
+            const districts = districtData[city] || ['기타 지역'];
+            
+            districts.forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+            });
+            
+            console.log('구/군 옵션 추가 완료:', districts.length, '개');
+        }
+        
+        // 동 드롭다운 채우기
+        function populateDongSelect(district) {
+            const dongSelect = document.getElementById('filterDong');
+            if (!dongSelect) return;
+
+            console.log('동 드롭다운 채우기:', district);
+            dongSelect.innerHTML = '<option value="">전체 동/읍/면</option>';
+            
+            // 간단한 동 목록
+            const dongs = ['1동', '2동', '3동', '중앙동', '역전동'];
+            
+            dongs.forEach(dong => {
+                const option = document.createElement('option');
+                option.value = dong;
+                option.textContent = dong;
+                dongSelect.appendChild(option);
+            });
+            
+            console.log('동 옵션 추가 완료:', dongs.length, '개');
+        }
+        
+        // 최종 지역 문자열 업데이트
+        function updateFinalLocation() {
+            const city = document.getElementById('filterCity')?.value || '';
+            const district = document.getElementById('filterDistrict')?.value || '';
+            const dong = document.getElementById('filterDong')?.value || '';
+            const locationHidden = document.getElementById('filterLocation');
+            const selectedDisplay = document.getElementById('selectedLocationDisplay');
+            const selectedText = document.getElementById('selectedLocationText');
+
+            let finalLocation = '';
+            if (city) {
+                finalLocation = city;
+                if (district) {
+                    finalLocation += ' ' + district;
+                    if (dong) {
+                        finalLocation += ' ' + dong;
+                    }
+                }
+            }
+
+            if (locationHidden) {
+                locationHidden.value = finalLocation;
+            }
+
+            // 선택된 지역 표시
+            if (selectedDisplay && selectedText) {
+                if (finalLocation) {
+                    selectedText.textContent = finalLocation;
+                    selectedDisplay.classList.remove('hidden');
+                } else {
+                    selectedDisplay.classList.add('hidden');
+                }
+            }
+
+            console.log('최종 선택 지역:', finalLocation);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 대시보드 - 파이코인 당근</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pi-orange': '#FF6600',
+                        'pi-yellow': '#FFD700',
+                        'carrot-orange': '#FF7E36',
+                        'admin-blue': '#1E40AF',
+                        'admin-indigo': '#4F46E5',
+                        'admin-purple': '#7C3AED',
+                        'admin-emerald': '#059669',
+                        'admin-cyan': '#0891B2',
+                        'admin-rose': '#E11D48',
+                        'admin-amber': '#D97706',
+                        'admin-gray': '#374151'
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'bounce-gentle': 'bounceGentle 0.6s ease-in-out',
+                        'pulse-soft': 'pulseSoft 2s infinite',
+                        'float': 'float 3s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        bounceGentle: {
+                            '0%, 100%': { transform: 'translateY(-5px)' },
+                            '50%': { transform: 'translateY(0px)' }
+                        },
+                        pulseSoft: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.02)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    },
+                    backdropBlur: {
+                        xs: '2px'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
+        
+        .nav-tab {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .nav-tab::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #FF6600, #FFD700);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-tab.active::before,
+        .nav-tab:hover::before {
+            width: 100%;
+        }
+        
+        .chart-container {
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- 메인 컨테이너 -->
+    <div class="flex min-h-screen">
+        <!-- 사이드바 -->
+        <aside class="w-64 gradient-bg text-white shadow-2xl relative overflow-hidden">
+            <!-- 배경 장식 -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16 animate-pulse-soft"></div>
+            <div class="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12 animate-float"></div>
+            
+            <div class="relative z-10">
+                <!-- 로고 섹션 -->
+                <div class="p-6 border-b border-white border-opacity-20">
+                    <div class="flex items-center space-x-3 mb-2 cursor-pointer" onclick="window.location.href='/'">
+                        <div class="w-10 h-10 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm hover:bg-opacity-30 transition-all duration-200">
+                            <span class="text-white font-bold text-lg">🥕</span>
+                        </div>
+                        <div>
+                            <h1 class="text-xl font-bold hover:text-yellow-200 transition-colors">파이코인 당근</h1>
+                            <p class="text-sm opacity-75">Admin Dashboard</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 관리자 정보 -->
+                <div class="p-6 border-b border-white border-opacity-20">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-12 h-12 bg-gradient-to-br from-pi-orange to-pi-yellow rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg animate-bounce-gentle">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <div>
+                            <div id="adminName" class="font-semibold text-white">관리자</div>
+                            <div class="text-sm opacity-75">Administrator</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 네비게이션 메뉴 -->
+                <nav class="p-4 space-y-2">
+                    <button class="nav-tab w-full text-left px-4 py-3 rounded-xl hover:bg-white hover:bg-opacity-10 transition-all duration-200 flex items-center space-x-3 active" data-tab="dashboard">
+                        <i class="fas fa-tachometer-alt w-5"></i>
+                        <span>대시보드</span>
+                    </button>
+                    
+                    <button class="nav-tab w-full text-left px-4 py-3 rounded-xl hover:bg-white hover:bg-opacity-10 transition-all duration-200 flex items-center space-x-3" data-tab="products">
+                        <i class="fas fa-box w-5"></i>
+                        <span>상품 관리</span>
+                    </button>
+                    
+                    <button class="nav-tab w-full text-left px-4 py-3 rounded-xl hover:bg-white hover:bg-opacity-10 transition-all duration-200 flex items-center space-x-3" data-tab="users">
+                        <i class="fas fa-users w-5"></i>
+                        <span>사용자 관리</span>
+                    </button>
+                    
+                    <button class="nav-tab w-full text-left px-4 py-3 rounded-xl hover:bg-white hover:bg-opacity-10 transition-all duration-200 flex items-center space-x-3" data-tab="purchases">
+                        <i class="fas fa-coins w-5"></i>
+                        <span>π-coin 판매</span>
+                    </button>
+                    
+                    <button class="nav-tab w-full text-left px-4 py-3 rounded-xl hover:bg-white hover:bg-opacity-10 transition-all duration-200 flex items-center space-x-3" data-tab="chats">
+                        <i class="fas fa-comments w-5"></i>
+                        <span>고객 문의</span>
+                    </button>
+                    
+                    <button class="nav-tab w-full text-left px-4 py-3 rounded-xl hover:bg-white hover:bg-opacity-10 transition-all duration-200 flex items-center space-x-3" data-tab="payment">
+                        <i class="fas fa-credit-card w-5"></i>
+                        <span>결제 설정</span>
+                    </button>
+                    
+                    <button class="nav-tab w-full text-left px-4 py-3 rounded-xl hover:bg-white hover:bg-opacity-10 transition-all duration-200 flex items-center space-x-3" data-tab="reports">
+                        <i class="fas fa-chart-line w-5"></i>
+                        <span>리포트</span>
+                    </button>
+                </nav>
+
+                <!-- 하단 액션 -->
+                <div class="absolute bottom-6 left-6 right-6">
+                    <button onclick="window.location.href='/'" class="w-full py-3 px-4 bg-white bg-opacity-10 hover:bg-opacity-20 rounded-xl transition-all duration-200 flex items-center justify-center space-x-2 backdrop-blur-sm">
+                        <i class="fas fa-home"></i>
+                        <span>홈으로 돌아가기</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="flex-1 overflow-hidden">
+            <!-- 헤더 -->
+            <header class="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 id="pageTitle" class="text-2xl font-bold text-gray-800">대시보드</h2>
+                        <p id="pageSubtitle" class="text-gray-600 mt-1">시스템 현황을 한눈에 확인하세요</p>
+                    </div>
+                    
+                    <div class="flex items-center space-x-4">
+                        <!-- 실시간 상태 -->
+                        <div class="flex items-center space-x-2 px-3 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                            <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span>실시간 연결</span>
+                        </div>
+                        
+                        <!-- 새로고침 버튼 -->
+                        <button id="refreshBtn" class="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="새로고침">
+                            <i class="fas fa-sync-alt text-gray-600"></i>
+                        </button>
+                        
+                        <!-- 설정 버튼 -->
+                        <button class="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="설정">
+                            <i class="fas fa-cog text-gray-600"></i>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 콘텐츠 영역 -->
+            <div class="p-6 overflow-y-auto" style="height: calc(100vh - 80px);">
+                <!-- 대시보드 탭 -->
+                <div id="dashboard-tab" class="tab-content animate-fade-in">
+                    <!-- 통계 카드 -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+                        <!-- 총 사용자 -->
+                        <div class="stat-card gradient-card p-6 rounded-2xl shadow-lg border border-white border-opacity-20">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-admin-blue bg-opacity-10 rounded-xl">
+                                    <i class="fas fa-users text-2xl text-admin-blue"></i>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-gray-600 mb-1">전체 사용자</div>
+                                    <div id="totalUsers" class="text-3xl font-bold text-gray-800">0</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm">
+                                <span class="text-green-600 font-medium">+12%</span>
+                                <span class="text-gray-500 ml-2">지난 달 대비</span>
+                            </div>
+                        </div>
+
+                        <!-- 등록된 상품 -->
+                        <div class="stat-card gradient-card p-6 rounded-2xl shadow-lg border border-white border-opacity-20">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-admin-emerald bg-opacity-10 rounded-xl">
+                                    <i class="fas fa-box text-2xl text-admin-emerald"></i>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-gray-600 mb-1">등록된 상품</div>
+                                    <div id="totalProducts" class="text-3xl font-bold text-gray-800">0</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm">
+                                <span class="text-green-600 font-medium">+8%</span>
+                                <span class="text-gray-500 ml-2">지난 주 대비</span>
+                            </div>
+                        </div>
+
+                        <!-- π-coin 판매액 -->
+                        <div class="stat-card gradient-card p-6 rounded-2xl shadow-lg border border-white border-opacity-20">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-pi-orange bg-opacity-10 rounded-xl">
+                                    <i class="fas fa-coins text-2xl text-pi-orange"></i>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-gray-600 mb-1">π-coin 판매액</div>
+                                    <div id="totalSales" class="text-3xl font-bold text-gray-800">₩0</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm">
+                                <span class="text-green-600 font-medium">+25%</span>
+                                <span class="text-gray-500 ml-2">지난 달 대비</span>
+                            </div>
+                        </div>
+
+                        <!-- 활성 채팅 -->
+                        <div class="stat-card gradient-card p-6 rounded-2xl shadow-lg border border-white border-opacity-20">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="p-3 bg-admin-purple bg-opacity-10 rounded-xl">
+                                    <i class="fas fa-comments text-2xl text-admin-purple"></i>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-sm text-gray-600 mb-1">활성 채팅</div>
+                                    <div id="activeChats" class="text-3xl font-bold text-gray-800">0</div>
+                                </div>
+                            </div>
+                            <div class="flex items-center text-sm">
+                                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
+                                <span class="text-green-600 font-medium">실시간</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 차트 섹션 -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-8">
+                        <!-- 매출 차트 -->
+                        <div class="chart-container p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800">매출 현황</h3>
+                                    <p class="text-gray-600 text-sm">최근 7일간 π-coin 판매 추이</p>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button class="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 rounded-full transition-colors">7일</button>
+                                    <button class="px-3 py-1 text-xs bg-pi-orange text-white rounded-full">30일</button>
+                                </div>
+                            </div>
+                            <canvas id="salesChart" width="400" height="200"></canvas>
+                        </div>
+
+                        <!-- 사용자 활동 차트 -->
+                        <div class="chart-container p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800">사용자 활동</h3>
+                                    <p class="text-gray-600 text-sm">일별 신규 가입자 및 활성 사용자</p>
+                                </div>
+                            </div>
+                            <canvas id="userChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 최근 활동 -->
+                    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                        <!-- 최근 가입자 -->
+                        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800">최근 가입자</h3>
+                                <button class="text-pi-orange hover:text-orange-600 text-sm font-medium">전체 보기</button>
+                            </div>
+                            <div id="recentUsers" class="space-y-4">
+                                <!-- 동적으로 로드됩니다 -->
+                            </div>
+                        </div>
+
+                        <!-- 최근 상품 -->
+                        <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-lg font-semibold text-gray-800">최근 등록 상품</h3>
+                                <button class="text-pi-orange hover:text-orange-600 text-sm font-medium">전체 보기</button>
+                            </div>
+                            <div id="recentProducts" class="space-y-4">
+                                <!-- 동적으로 로드됩니다 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 상품 관리 탭 -->
+                <div id="products-tab" class="tab-content hidden">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                        <!-- 검색 필터 -->
+                        <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">상품명/설명 검색</label>
+                                    <input type="text" id="productQuery" placeholder="키워드 입력..." 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-pi-orange">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">등록일</label>
+                                    <input type="date" id="productDate" 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-pi-orange">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">판매자 이메일</label>
+                                    <input type="email" id="productEmail" placeholder="이메일 검색..." 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-pi-orange">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">사용자명</label>
+                                    <input type="text" id="productUsername" placeholder="사용자명 검색..." 
+                                           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-pi-orange">
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-between items-center mt-4">
+                                <span class="text-sm text-gray-600">
+                                    검색 결과: <span id="productCount" class="font-bold text-pi-orange">0</span>개
+                                </span>
+                                <div class="flex space-x-2">
+                                    <button onclick="adminDashboard.resetProductFilters()" 
+                                            class="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-undo mr-1"></i>초기화
+                                    </button>
+                                    <button onclick="adminDashboard.searchProducts()" 
+                                            class="px-4 py-2 bg-pi-orange text-white rounded-lg hover:bg-orange-600 transition-colors">
+                                        <i class="fas fa-search mr-1"></i>검색
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 상품 테이블 -->
+                        <div class="overflow-x-auto">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th class="w-20">ID</th>
+                                        <th class="min-w-48">상품명</th>
+                                        <th class="min-w-36">판매자</th>
+                                        <th class="w-28">가격</th>
+                                        <th class="w-24">등록일</th>
+                                        <th class="w-24">상태</th>
+                                        <th class="w-20">신고</th>
+                                        <th class="w-32">관리</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTable">
+                                    <!-- 동적으로 로드됩니다 -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- 로딩 상태 -->
+                        <div id="productsLoading" class="text-center py-12 hidden">
+                            <div class="inline-block w-8 h-8 border-4 border-pi-orange border-t-transparent rounded-full animate-spin mb-4"></div>
+                            <p class="text-gray-600">상품 목록을 불러오는 중...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 사용자 관리 탭 -->
+                <div id="users-tab" class="tab-content hidden">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">사용자 관리</h3>
+                        <div class="text-center py-12 text-gray-500">
+                            <i class="fas fa-users text-6xl mb-4 opacity-30"></i>
+                            <p class="text-lg">사용자 관리 기능을 준비중입니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- π-coin 판매 탭 -->
+                <div id="purchases-tab" class="tab-content hidden">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">π-coin 구매 내역</h3>
+                        <div id="purchasesList" class="space-y-4">
+                            <!-- 동적으로 로드됩니다 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 고객 문의 탭 -->
+                <div id="chats-tab" class="tab-content hidden">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">고객 문의</h3>
+                        <div class="text-center py-12 text-gray-500">
+                            <i class="fas fa-comments text-6xl mb-4 opacity-30"></i>
+                            <p class="text-lg">고객 문의 관리 기능을 준비중입니다.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 결제 설정 탭 -->
+                <div id="payment-tab" class="tab-content hidden">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-gray-800">결제 시스템 설정</h3>
+                            <div class="flex items-center space-x-4">
+                                <span class="text-sm text-gray-600">PG사 연동 상태:</span>
+                                <span id="pgStatus" class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">비활성화</span>
+                            </div>
+                        </div>
+
+                        <!-- PG사 활성화 스위치 -->
+                        <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 mb-6 border border-blue-100">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-2">PG사 연동 활성화</h4>
+                                    <p class="text-gray-600 text-sm">실제 결제 시스템을 사용하여 π-coin을 판매합니다</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="pgEnabledSwitch" class="sr-only peer">
+                                    <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-pi-orange"></div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 테스트 모드 설정 -->
+                        <div class="bg-gradient-to-r from-yellow-50 to-amber-50 rounded-2xl p-6 mb-6 border border-yellow-200">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="text-lg font-semibold text-amber-800 mb-2">테스트 모드</h4>
+                                    <p class="text-amber-700 text-sm">실제 결제 없이 테스트 결제를 진행합니다</p>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="testModeSwitch" class="sr-only peer" checked>
+                                    <div class="w-14 h-8 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-amber-500"></div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- PG사별 설정 -->
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                            <!-- 토스페이먼츠 설정 -->
+                            <div class="bg-white border-2 border-gray-100 rounded-2xl p-6 hover:border-blue-300 transition-colors">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center mr-4">
+                                        <i class="fas fa-mobile-alt text-blue-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-800">토스페이먼츠</h4>
+                                        <p class="text-gray-600 text-sm">토스페이 간편결제 연동</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">클라이언트 키</label>
+                                        <input type="text" id="tossClientKey" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-pi-orange transition-colors" placeholder="test_ck_xxxxxxxx">
+                                        <p class="text-xs text-gray-500 mt-2">토스페이먼츠 개발자센터에서 발급받은 클라이언트 키</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">시크릿 키</label>
+                                        <input type="password" id="tossSecretKey" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-pi-orange transition-colors" placeholder="test_sk_xxxxxxxx">
+                                        <p class="text-xs text-gray-500 mt-2">보안이 중요한 서버 사이드 키</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 카카오페이 설정 -->
+                            <div class="bg-white border-2 border-gray-100 rounded-2xl p-6 hover:border-yellow-300 transition-colors">
+                                <div class="flex items-center mb-4">
+                                    <div class="w-12 h-12 bg-yellow-100 rounded-2xl flex items-center justify-center mr-4">
+                                        <i class="fas fa-comment text-yellow-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-semibold text-gray-800">카카오페이</h4>
+                                        <p class="text-gray-600 text-sm">카카오페이 간편결제 연동</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">가맹점 코드 (CID)</label>
+                                        <input type="text" id="kakaoCid" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-pi-orange transition-colors" placeholder="TC0ONETIME">
+                                        <p class="text-xs text-gray-500 mt-2">카카오페이 개발자센터에서 발급받은 가맹점 코드</p>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">시크릿 키</label>
+                                        <input type="password" id="kakaoSecretKey" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-pi-orange transition-colors" placeholder="시크릿 키 입력">
+                                        <p class="text-xs text-gray-500 mt-2">카카오페이 API 인증용 시크릿 키</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 설정 저장 버튼 -->
+                        <div class="flex justify-end space-x-4">
+                            <button onclick="resetPaymentSettings()" class="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-colors font-medium">
+                                <i class="fas fa-undo mr-2"></i>
+                                초기화
+                            </button>
+                            <button onclick="testPaymentConnection()" class="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium">
+                                <i class="fas fa-plug mr-2"></i>
+                                연결 테스트
+                            </button>
+                            <button onclick="savePaymentSettings()" class="px-6 py-3 bg-pi-orange text-white rounded-xl hover:bg-orange-600 transition-colors font-medium">
+                                <i class="fas fa-save mr-2"></i>
+                                설정 저장
+                            </button>
+                        </div>
+
+                        <!-- 도움말 -->
+                        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 mt-6 border border-blue-100">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-info-circle text-blue-500 text-xl mt-1"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h4 class="text-sm font-medium text-blue-800 mb-3">PG사 연동 가이드</h4>
+                                    <div class="text-sm text-blue-700 space-y-3">
+                                        <div>
+                                            <p class="font-semibold mb-2">1. 토스페이먼츠 연동:</p>
+                                            <ul class="list-disc list-inside ml-4 space-y-1">
+                                                <li><a href="https://developers.tosspayments.com/" target="_blank" class="underline hover:text-blue-900">토스페이먼츠 개발자센터</a>에서 계정 생성</li>
+                                                <li>클라이언트 키와 시크릿 키 발급</li>
+                                                <li>테스트 환경에서 충분히 테스트 후 운영 키로 전환</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <div>
+                                            <p class="font-semibold mb-2">2. 카카오페이 연동:</p>
+                                            <ul class="list-disc list-inside ml-4 space-y-1">
+                                                <li><a href="https://developers.kakao.com/" target="_blank" class="underline hover:text-blue-900">카카오 개발자센터</a>에서 앱 등록</li>
+                                                <li>카카오페이 서비스 활성화</li>
+                                                <li>가맹점 코드(CID) 및 시크릿 키 확인</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <p class="font-semibold text-blue-800 border-t border-blue-200 pt-3">
+                                            <i class="fas fa-exclamation-triangle mr-2"></i>
+                                            주의사항: 실제 운영 환경에서는 반드시 HTTPS를 사용하고, 시크릿 키는 안전하게 관리해주세요.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 리포트 탭 -->
+                <div id="reports-tab" class="tab-content hidden">
+                    <div class="bg-white rounded-2xl p-6 shadow-lg border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">시스템 리포트</h3>
+                        <div class="text-center py-12 text-gray-500">
+                            <i class="fas fa-chart-line text-6xl mb-4 opacity-30"></i>
+                            <p class="text-lg">시스템 리포트 기능을 준비중입니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 상품 관리 액션 모달 -->
+    <div id="actionModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+            <div class="flex items-center justify-between mb-6">
+                <h3 id="actionTitle" class="text-xl font-bold text-gray-800">상품 관리</h3>
+                <button onclick="adminDashboard.hideActionModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <div id="actionContent">
+                <!-- 동적으로 생성됩니다 -->
+            </div>
+
+            <div class="flex space-x-3 mt-6">
+                <button id="cancelAction" class="flex-1 px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    취소
+                </button>
+                <button id="confirmAction" class="flex-1 px-4 py-2 text-white rounded-lg transition-colors">
+                    확인
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 로딩 오버레이 -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-2xl p-8 text-center max-w-sm mx-4">
+            <div class="animate-spin rounded-full h-12 w-12 border-4 border-pi-orange border-t-transparent mx-auto mb-4"></div>
+            <p class="text-gray-700 font-medium">처리 중...</p>
+        </div>
+    </div>
+
+    <!-- 토스트 컨테이너 -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 space-y-2"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.0/dist/axios.min.js"></script>
+    <script src="/static/admin.js?v=3"></script>
+</body>
+</html>

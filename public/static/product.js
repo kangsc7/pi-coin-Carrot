@@ -118,9 +118,21 @@ class ProductDetail {
     // 판매자 정보
     this.renderSellerInfo()
 
-    // 자신의 상품인 경우 채팅 버튼 숨기기
-    if (this.currentUser && this.currentUser.id === this.product.seller_id) {
-      document.getElementById('chatBtn').style.display = 'none'
+    // 권한에 따른 버튼 표시/숨김
+    if (this.currentUser) {
+      const isOwner = this.currentUser.id === this.product.seller_id
+      const isAdmin = this.currentUser.email === '5321497@naver.com'
+      
+      // 자신의 상품인 경우 채팅 버튼 숨기기
+      if (isOwner) {
+        document.getElementById('chatBtn').style.display = 'none'
+      }
+      
+      // 소유자이거나 관리자인 경우 수정 버튼 표시
+      if (isOwner || isAdmin) {
+        const editBtn = document.getElementById('editBtn')
+        editBtn.classList.remove('hidden')
+      }
     }
   }
 
@@ -222,6 +234,12 @@ class ProductDetail {
 
     // 공유 버튼
     document.getElementById('shareBtn').addEventListener('click', () => this.shareProduct())
+
+    // 수정 버튼
+    const editBtn = document.getElementById('editBtn')
+    if (editBtn) {
+      editBtn.addEventListener('click', () => this.editProduct())
+    }
   }
 
   // 좋아요 토글
@@ -346,6 +364,25 @@ class ProductDetail {
         this.showToast('링크 복사에 실패했습니다.', 'error')
       })
     }
+  }
+
+  // 상품 수정
+  async editProduct() {
+    if (!this.currentUser) {
+      this.showToast('로그인이 필요한 서비스입니다.', 'info')
+      return
+    }
+
+    const isOwner = this.currentUser.id === this.product.seller_id
+    const isAdmin = this.currentUser.email === '5321497@naver.com'
+    
+    if (!isOwner && !isAdmin) {
+      this.showToast('상품 수정 권한이 없습니다.', 'error')
+      return
+    }
+
+    // 수정 페이지로 이동 (쿼리 파라미터에 수정할 상품 ID 포함)
+    window.location.href = `/static/sell.html?edit=${this.productId}`
   }
 
   // 상품 없음 표시
