@@ -1071,18 +1071,31 @@ class PicoinMarket {
     // 기존 옵션 제거 후 기본 옵션 추가
     citySelect.innerHTML = '<option value="">전체 시/도</option>'
     
-    // 대한민국 주요 시/도 목록
+    // 대한민국 주요 시/도 목록 (코드와 이름 포함)
     const cities = [
-      '서울특별시', '부산광역시', '대구광역시', '인천광역시', 
-      '광주광역시', '대전광역시', '울산광역시', '세종특별자치시',
-      '경기도', '강원도', '충청북도', '충청남도', 
-      '전라북도', '전라남도', '경상북도', '경상남도', '제주특별자치도'
+      { code: 'seoul', name: '서울특별시' },
+      { code: 'busan', name: '부산광역시' },
+      { code: 'daegu', name: '대구광역시' },
+      { code: 'incheon', name: '인천광역시' },
+      { code: 'gwangju', name: '광주광역시' },
+      { code: 'daejeon', name: '대전광역시' },
+      { code: 'ulsan', name: '울산광역시' },
+      { code: 'sejong', name: '세종특별자치시' },
+      { code: 'gyeonggi', name: '경기도' },
+      { code: 'gangwon', name: '강원도' },
+      { code: 'chungbuk', name: '충청북도' },
+      { code: 'chungnam', name: '충청남도' },
+      { code: 'jeonbuk', name: '전라북도' },
+      { code: 'jeonnam', name: '전라남도' },
+      { code: 'gyeongbuk', name: '경상북도' },
+      { code: 'gyeongnam', name: '경상남도' },
+      { code: 'jeju', name: '제주특별자치도' }
     ]
     
     cities.forEach(city => {
       const option = document.createElement('option')
-      option.value = city
-      option.textContent = city
+      option.value = city.code  // 코드를 value로 사용
+      option.textContent = city.name
       citySelect.appendChild(option)
     })
     
@@ -1147,29 +1160,36 @@ class PicoinMarket {
   }
 
   // 구/군 드롭다운 채우기
-  populateDistrictSelect(city) {
+  populateDistrictSelect(cityCode) {
     const districtSelect = document.getElementById('filterDistrict')
     if (!districtSelect) return
 
     districtSelect.innerHTML = '<option value="">전체 구/군</option>'
     
-    // 간단한 구/군 목록 (주요 도시들만)
+    // 간단한 구/군 목록 (주요 도시들만) - 코드 기반으로 변경
     const districtData = {
-      '서울특별시': ['강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'],
-      '부산광역시': ['강서구', '금정구', '남구', '동구', '동래구', '부산진구', '북구', '사상구', '사하구', '서구', '수영구', '연제구', '영도구', '중구', '해운대구', '기장군'],
-      '대구광역시': ['남구', '달서구', '동구', '북구', '서구', '수성구', '중구', '달성군'],
-      '인천광역시': ['계양구', '남동구', '동구', '미추홀구', '부평구', '서구', '연수구', '중구', '강화군', '옹진군'],
-      '경기도': ['수원시', '성남시', '안양시', '안산시', '고양시', '과천시', '광명시', '광주시', '군포시', '김포시', '남양주시', '동두천시', '부천시', '시흥시', '안성시', '오산시', '의왕시', '의정부시', '이천시', '파주시', '평택시', '포천시', '하남시', '화성시', '여주시', '양평군', '가평군', '연천군']
+      'seoul': ['강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'],
+      'busan': ['강서구', '금정구', '남구', '동구', '동래구', '부산진구', '북구', '사상구', '사하구', '서구', '수영구', '연제구', '영도구', '중구', '해운대구', '기장군'],
+      'daegu': ['남구', '달서구', '동구', '북구', '서구', '수성구', '중구', '달성군'],
+      'incheon': ['계양구', '남동구', '동구', '미추홀구', '부평구', '서구', '연수구', '중구', '강화군', '옹진군'],
+      'gwangju': ['광산구', '남구', '동구', '북구', '서구'],
+      'daejeon': ['대덕구', '동구', '서구', '유성구', '중구'],
+      'ulsan': ['남구', '동구', '북구', '중구', '울주군'],
+      'gyeonggi': ['수원시', '성남시', '안양시', '안산시', '고양시', '과천시', '광명시', '광주시', '군포시', '김포시', '남양주시', '동두천시', '부천시', '시흥시', '안성시', '오산시', '의왕시', '의정부시', '이천시', '파주시', '평택시', '포천시', '하남시', '화성시', '여주시', '양평군', '가평군', '연천군']
     }
 
-    const districts = districtData[city] || ['기타 지역']
+    const districts = districtData[cityCode] || ['기타 지역']
     
-    districts.forEach(district => {
+    districts.forEach((district, index) => {
       const option = document.createElement('option')
-      option.value = district
+      option.value = cityCode + '_' + index  // 고유한 값 생성
       option.textContent = district
       districtSelect.appendChild(option)
     })
+    
+    // 구/군 선택 가능하도록 활성화
+    districtSelect.disabled = false
+    console.log('구/군 옵션 추가 완료:', districts.length, '개')
   }
 
   // 동 드롭다운 채우기 (간단한 예시)
