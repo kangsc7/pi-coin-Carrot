@@ -361,10 +361,30 @@ class PicoinMarket {
       if (response.data.success) {
         this.categories = response.data.categories
         this.renderCategories()
+      } else {
+        // API 실패 시 기본 카테고리 사용
+        this.loadDefaultCategories()
       }
     } catch (error) {
       console.error('카테고리 로드 실패:', error)
+      // 에러 발생 시 기본 카테고리 사용
+      this.loadDefaultCategories()
     }
+  }
+  
+  // 기본 카테고리 로드
+  loadDefaultCategories() {
+    this.categories = [
+      { id: 1, name: '전자기기', icon: '📱' },
+      { id: 2, name: '가구/인테리어', icon: '🛋️' },
+      { id: 3, name: '의류/패션잡화', icon: '👕' },
+      { id: 4, name: '도서/음반', icon: '📚' },
+      { id: 5, name: '스포츠/레저', icon: '⚽' },
+      { id: 6, name: '게임/취미', icon: '🎮' },
+      { id: 7, name: '생활용품', icon: '🏠' },
+      { id: 8, name: '기타', icon: '📦' }
+    ]
+    this.renderCategories()
   }
 
   // 상품 목록 로드
@@ -1069,7 +1089,7 @@ class PicoinMarket {
     console.log('시/도 드롭다운 초기화 중...')
     
     // 기존 옵션 제거 후 기본 옵션 추가
-    citySelect.innerHTML = '<option value="">전체 시/도</option>'
+    citySelect.innerHTML = '<option value="">시/도를 선택하세요</option>'
     
     // 대한민국 주요 시/도 목록 (코드와 이름 포함)
     const cities = [
@@ -1118,16 +1138,17 @@ class PicoinMarket {
         console.log('선택된 시/도:', selectedCity)
         
         if (selectedCity) {
+          // 구/군 목록 로드 및 활성화
           this.populateDistrictSelect(selectedCity)
-          districtSelect.disabled = false
           
           // 최종 지역 업데이트
           this.updateFinalLocation()
         } else {
+          // 시/도 미선택 시 하위 항목 비활성화
           districtSelect.disabled = true
           dongSelect.disabled = true
-          districtSelect.innerHTML = '<option value="">전체 구/군</option>'
-          dongSelect.innerHTML = '<option value="">전체 동/읍/면</option>'
+          districtSelect.innerHTML = '<option value="">구/군을 선택하세요</option>'
+          dongSelect.innerHTML = '<option value="">동/읍/면을 선택하세요</option>'
           this.updateFinalLocation()
         }
       })
@@ -2346,18 +2367,25 @@ class PicoinMarket {
     const filterPanel = document.getElementById('filterPanel')
     const filterSidebar = document.getElementById('filterSidebar')
     
+    // 필터 패널만 표시 (지역 필터 팝업)
     if (filterPanel) {
-      console.log('필터 패널 표시')
-      filterPanel.classList.remove('hidden')
-      filterPanel.classList.add('flex')
-      
-      // 지역 데이터 초기화
-      this.populateLocationData()
+      console.log('필터 패널 토글')
+      const isHidden = filterPanel.classList.contains('hidden')
+      if (isHidden) {
+        filterPanel.classList.remove('hidden')
+        filterPanel.classList.add('flex')
+        // 지역 데이터 초기화
+        this.populateLocationData()
+      } else {
+        filterPanel.classList.add('hidden')
+        filterPanel.classList.remove('flex')
+      }
     }
     
+    // 사이드바 카테고리는 항상 표시
     if (filterSidebar) {
-      console.log('필터 사이드바 토글')
-      filterSidebar.classList.toggle('hidden')
+      console.log('필터 사이드바 표시')
+      filterSidebar.classList.remove('hidden')
     }
   }
 
