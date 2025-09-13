@@ -6,6 +6,7 @@
     <meta name="description" content="파이코인 마켓 - 당근마켓을 벤치마킹한 파이코인 기반 중고거래 플랫폼">
     <meta name="keywords" content="파이코인, 중고거래, 마켓플레이스, pi-coin, 당근마켓">
     <title>파이코인 마켓 🥕 - Pi-coin 기반 중고거래 플랫폼</title>
+    <link rel="stylesheet" href="public/static/styles.css">
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
 </head>
@@ -41,7 +42,7 @@
                     안전하고 간편한 P2P 거래 서비스
                 </p>
                 <div class="hero-buttons">
-                    <a href="#" class="btn btn-primary">지금 시작하기</a>
+                    <a href="public/static/board.html" class="btn btn-primary">지금 시작하기</a>
                     <a href="#features" class="btn btn-secondary">더 알아보기</a>
                 </div>
                 <div class="hero-stats">
@@ -276,9 +277,62 @@
         <div class="container">
             <h2>지금 바로 시작하세요!</h2>
             <p>가입하고 50 π-coin 보너스를 받아보세요</p>
-            <a href="#" class="btn btn-primary btn-large">무료로 시작하기</a>
+            <a href="public/static/board.html" class="btn btn-primary btn-large">무료로 시작하기</a>
         </div>
     </section>
+
+    <!-- 서비스 페이지 링크 섹션 -->
+    <section class="service-links" style="padding: 80px 0; background: #f8f9fa;">
+        <div class="container">
+            <h2 class="section-title">서비스 둘러보기</h2>
+            <p class="section-subtitle">파이코인 마켓의 다양한 기능을 체험해보세요</p>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 50px;">
+                <a href="public/static/board.html" class="service-card" style="background: white; padding: 30px; border-radius: 12px; text-decoration: none; color: inherit; display: block; transition: transform 0.3s, box-shadow 0.3s;">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">📋</div>
+                    <h3 style="color: #212529; margin-bottom: 10px;">상품 게시판</h3>
+                    <p style="color: #6c757d;">다양한 상품을 둘러보고 거래를 시작하세요</p>
+                </a>
+                
+                <a href="public/static/sell.html" class="service-card" style="background: white; padding: 30px; border-radius: 12px; text-decoration: none; color: inherit; display: block; transition: transform 0.3s, box-shadow 0.3s;">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">💰</div>
+                    <h3 style="color: #212529; margin-bottom: 10px;">판매하기</h3>
+                    <p style="color: #6c757d;">내 물건을 파이코인으로 판매하세요</p>
+                </a>
+                
+                <a href="public/static/purchase.html" class="service-card" style="background: white; padding: 30px; border-radius: 12px; text-decoration: none; color: inherit; display: block; transition: transform 0.3s, box-shadow 0.3s;">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">🪙</div>
+                    <h3 style="color: #212529; margin-bottom: 10px;">π-coin 구매</h3>
+                    <p style="color: #6c757d;">파이코인을 충전하고 거래를 시작하세요</p>
+                </a>
+                
+                <a href="public/static/chat.html" class="service-card" style="background: white; padding: 30px; border-radius: 12px; text-decoration: none; color: inherit; display: block; transition: transform 0.3s, box-shadow 0.3s;">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">💬</div>
+                    <h3 style="color: #212529; margin-bottom: 10px;">1:1 채팅</h3>
+                    <p style="color: #6c757d;">판매자와 실시간으로 대화하세요</p>
+                </a>
+                
+                <a href="public/static/notice.html" class="service-card" style="background: white; padding: 30px; border-radius: 12px; text-decoration: none; color: inherit; display: block; transition: transform 0.3s, box-shadow 0.3s;">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">📢</div>
+                    <h3 style="color: #212529; margin-bottom: 10px;">공지사항</h3>
+                    <p style="color: #6c757d;">중요한 소식과 업데이트를 확인하세요</p>
+                </a>
+                
+                <a href="public/static/admin.html" class="service-card" style="background: white; padding: 30px; border-radius: 12px; text-decoration: none; color: inherit; display: block; transition: transform 0.3s, box-shadow 0.3s;">
+                    <div style="font-size: 2.5rem; margin-bottom: 15px;">👨‍💼</div>
+                    <h3 style="color: #212529; margin-bottom: 10px;">관리자</h3>
+                    <p style="color: #6c757d;">서비스 관리 (관리자 전용)</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+        }
+    </style>
 
     <!-- 푸터 -->
     <footer id="contact" class="footer">
@@ -297,10 +351,10 @@
                 <div class="footer-section">
                     <h4>서비스</h4>
                     <ul>
-                        <li><a href="#">중고거래</a></li>
-                        <li><a href="#">π-coin 구매</a></li>
-                        <li><a href="#">안전거래</a></li>
-                        <li><a href="#">고객센터</a></li>
+                        <li><a href="public/static/board.html">중고거래</a></li>
+                        <li><a href="public/static/purchase.html">π-coin 구매</a></li>
+                        <li><a href="public/static/sell.html">판매하기</a></li>
+                        <li><a href="public/static/notice.html">공지사항</a></li>
                     </ul>
                 </div>
                 
@@ -329,5 +383,6 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="public/static/app.js"></script>
 </body>
 </html>
