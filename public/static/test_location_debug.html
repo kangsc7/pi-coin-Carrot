@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지역 필터 디버깅 테스트</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">지역 필터 디버깅 테스트</h1>
+        
+        <div class="bg-white p-6 rounded-lg shadow mb-6">
+            <h2 class="text-lg font-semibold mb-4">1. 필터 버튼 테스트</h2>
+            <button id="testFilterBtn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+                필터 팝업 열기
+            </button>
+        </div>
+
+        <!-- 지역 필터 팝업 -->
+        <div id="filterPanel" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+            <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4">
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-xl font-bold text-gray-800">지역 필터 테스트</h3>
+                    <button id="closeFilter" class="text-gray-400 hover:text-gray-600">×</button>
+                </div>
+
+                <div class="space-y-4">
+                    <!-- 시/도 선택 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">시/도</label>
+                        <select id="filterCity" class="w-full px-3 py-2 border border-gray-300 rounded-lg">
+                            <option value="">전체 시/도</option>
+                        </select>
+                    </div>
+
+                    <!-- 구/군 선택 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">구/군</label>
+                        <select id="filterDistrict" class="w-full px-3 py-2 border border-gray-300 rounded-lg" disabled>
+                            <option value="">전체 구/군</option>
+                        </select>
+                    </div>
+
+                    <!-- 동 선택 -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">동/읍/면</label>
+                        <select id="filterDong" class="w-full px-3 py-2 border border-gray-300 rounded-lg" disabled>
+                            <option value="">전체 동/읍/면</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mt-6">
+                    <button class="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600">
+                        적용
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold mb-4">2. 디버그 정보</h2>
+            <div id="debugInfo" class="text-sm text-gray-600 space-y-2"></div>
+        </div>
+    </div>
+
+    <script>
+    // 지역 데이터
+    const locationData = {
+        '서울특별시': ['강남구', '강동구', '강북구', '강서구', '관악구', '광진구', '구로구', '금천구', '노원구', '도봉구', '동대문구', '동작구', '마포구', '서대문구', '서초구', '성동구', '성북구', '송파구', '양천구', '영등포구', '용산구', '은평구', '종로구', '중구', '중랑구'],
+        '부산광역시': ['강서구', '금정구', '기장군', '남구', '동구', '동래구', '부산진구', '북구', '사상구', '사하구', '서구', '수영구', '연제구', '영도구', '중구', '해운대구'],
+        '대구광역시': ['남구', '달서구', '달성군', '동구', '북구', '서구', '수성구', '중구'],
+        '인천광역시': ['강화군', '계양구', '남동구', '동구', '미추홀구', '부평구', '서구', '연수구', '옹진군', '중구']
+    };
+
+    function log(message) {
+        const debugInfo = document.getElementById('debugInfo');
+        const div = document.createElement('div');
+        div.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+        debugInfo.appendChild(div);
+        console.log(message);
+    }
+
+    function initializeCitySelect() {
+        log('initializeCitySelect 호출됨');
+        
+        const citySelect = document.getElementById('filterCity');
+        if (!citySelect) {
+            log('ERROR: filterCity 요소를 찾을 수 없습니다');
+            return;
+        }
+        
+        log('filterCity 요소 찾음');
+        
+        // 기존 옵션 제거 (첫 번째 옵션은 유지)
+        while (citySelect.children.length > 1) {
+            citySelect.removeChild(citySelect.lastChild);
+        }
+        
+        // 시/도 옵션 추가
+        Object.keys(locationData).forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            citySelect.appendChild(option);
+            log(`시/도 옵션 추가됨: ${city}`);
+        });
+        
+        // 시/도 변경 이벤트 리스너 추가
+        citySelect.addEventListener('change', (e) => {
+            log(`시/도 변경됨: ${e.target.value}`);
+            updateDistrictOptions(e.target.value);
+        });
+        
+        log('시/도 드롭다운 초기화 완료');
+    }
+
+    function updateDistrictOptions(selectedCity) {
+        log(`updateDistrictOptions 호출됨, 선택된 시/도: ${selectedCity}`);
+        
+        const districtSelect = document.getElementById('filterDistrict');
+        const dongSelect = document.getElementById('filterDong');
+        
+        if (!districtSelect || !dongSelect) {
+            log('ERROR: filterDistrict 또는 filterDong 요소를 찾을 수 없습니다');
+            return;
+        }
+        
+        // 구/군 드롭다운 초기화
+        while (districtSelect.children.length > 1) {
+            districtSelect.removeChild(districtSelect.lastChild);
+        }
+        
+        // 동 드롭다운 초기화 및 비활성화
+        while (dongSelect.children.length > 1) {
+            dongSelect.removeChild(dongSelect.lastChild);
+        }
+        dongSelect.disabled = true;
+        
+        if (selectedCity && locationData[selectedCity]) {
+            log(`${selectedCity}의 구/군 데이터 로드 중...`);
+            
+            // 구/군 활성화 및 옵션 추가
+            districtSelect.disabled = false;
+            
+            locationData[selectedCity].forEach(district => {
+                const option = document.createElement('option');
+                option.value = district;
+                option.textContent = district;
+                districtSelect.appendChild(option);
+                log(`구/군 옵션 추가됨: ${district}`);
+            });
+            
+            // 구/군 변경 이벤트 리스너
+            districtSelect.addEventListener('change', (e) => {
+                log(`구/군 변경됨: ${e.target.value}`);
+                updateDongOptions(selectedCity, e.target.value);
+            });
+            
+            log(`구/군 드롭다운 활성화 완료 (${locationData[selectedCity].length}개 옵션)`);
+        } else {
+            log('시/도가 선택되지 않음 - 구/군 비활성화');
+            districtSelect.disabled = true;
+        }
+    }
+
+    function updateDongOptions(selectedCity, selectedDistrict) {
+        log(`updateDongOptions 호출됨, 시/도: ${selectedCity}, 구/군: ${selectedDistrict}`);
+        
+        const dongSelect = document.getElementById('filterDong');
+        
+        if (!dongSelect) {
+            log('ERROR: filterDong 요소를 찾을 수 없습니다');
+            return;
+        }
+        
+        // 동 드롭다운 초기화
+        while (dongSelect.children.length > 1) {
+            dongSelect.removeChild(dongSelect.lastChild);
+        }
+        
+        if (selectedDistrict) {
+            dongSelect.disabled = false;
+            log('동/읍/면 드롭다운 활성화됨');
+        } else {
+            dongSelect.disabled = true;
+            log('구/군이 선택되지 않음 - 동/읍/면 비활성화');
+        }
+    }
+
+    // 이벤트 리스너 설정
+    document.addEventListener('DOMContentLoaded', () => {
+        log('DOM 로드 완료');
+
+        // 필터 버튼
+        document.getElementById('testFilterBtn').addEventListener('click', () => {
+            log('필터 버튼 클릭됨');
+            const filterPanel = document.getElementById('filterPanel');
+            filterPanel.classList.remove('hidden');
+            filterPanel.classList.add('flex');
+            initializeCitySelect();
+        });
+
+        // 닫기 버튼
+        document.getElementById('closeFilter').addEventListener('click', () => {
+            log('필터 닫기 버튼 클릭됨');
+            const filterPanel = document.getElementById('filterPanel');
+            filterPanel.classList.add('hidden');
+            filterPanel.classList.remove('flex');
+        });
+
+        // 외부 클릭 시 닫기
+        document.getElementById('filterPanel').addEventListener('click', (e) => {
+            if (e.target.id === 'filterPanel') {
+                log('팝업 외부 클릭 - 필터 팝업 닫기');
+                const filterPanel = document.getElementById('filterPanel');
+                filterPanel.classList.add('hidden');
+                filterPanel.classList.remove('flex');
+            }
+        });
+
+        log('모든 이벤트 리스너 설정 완료');
+    });
+    </script>
+</body>
+</html>
